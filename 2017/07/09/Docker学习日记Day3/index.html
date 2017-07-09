@@ -22,7 +22,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/07/09/Docker学习日记Day3/index.html">
 <meta property="og:site_name" content="FogDong&#39;s blog">
 <meta property="og:description" content="docker-spigotDockerfile： FROM nimmis/java:openjdk-8-jdk：指定基础镜像，配置java环境 ENV SPIGOT_HOME=/minecraft \：SPIGOT-server的默认目录SPIGOT_VER=latest \：默认版本为最新SPIGOT_AUTORESTART=yes：结合readme里写的，应该是如果mc内部的stop出了问题，">
-<meta property="og:updated_time" content="2017-07-09T11:08:25.000Z">
+<meta property="og:updated_time" content="2017-07-09T11:33:50.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Docker学习日记 Day3">
 <meta name="twitter:description" content="docker-spigotDockerfile： FROM nimmis/java:openjdk-8-jdk：指定基础镜像，配置java环境 ENV SPIGOT_HOME=/minecraft \：SPIGOT-server的默认目录SPIGOT_VER=latest \：默认版本为最新SPIGOT_AUTORESTART=yes：结合readme里写的，应该是如果mc内部的stop出了问题，">
@@ -185,6 +185,11 @@
 <li><code>ENV SPIGOT_HOME=/minecraft \</code>：SPIGOT-server的默认目录<br><code>SPIGOT_VER=latest \</code>：默认版本为最新<br><code>SPIGOT_AUTORESTART=yes</code>：结合readme里写的，应该是如果mc内部的stop出了问题，就重新启动</li>
 <li><code>COPY rootfs /</code>：复制额外需要的文件<blockquote>
 <p>rootf中：<br>waitjava.sh处理mc错误的stop命令，在supervisor/conf.d里调用了waitjava.sh<br>在usr/local/bin中指定了常用简便指令，eg：<code>mc_stop</code></p>
+<ul>
+<li><code>mc_log</code>：<code>/etc/init.d/minecraft_server log</code><br>查阅/etc/init.d/minecraft_server可发现：<br><code>log)<br>echo “Abort with CTRL-C”<br>tail -f $MC_DIR/output.con</code><br>即输出日志</li>
+<li><code>mc_restart</code>：<code>supervisorctl restart spigot</code><br>supervisor 主要由两部分组成：<br>1.supervisord(server 部分)：主要负责管理子进程，响应客户端命令以及日志的输出等；<br>2.supervisorctl(client 部分)：命令行客户端，用户可以通过它与不同的 supervisord 进程联系，获取子进程的状态等。</li>
+<li><code>mc_send</code>：<code>echo “/etc/init.d/minecraft_server send \”$1\””<br>/etc/init.d/minecraft_server send “$1 $2 $3 $4 $5”<br>mc_log</code></li>
+</ul>
 </blockquote>
 </li>
 </ol>
