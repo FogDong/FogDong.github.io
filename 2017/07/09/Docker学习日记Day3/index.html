@@ -15,17 +15,17 @@
     <meta name="keywords" content="Docker," />
   
 
-  <meta name="description" content="docker-spigotDockerfile： FROM nimmis/java:openjdk-8-jdk：指定基础镜像，配置java环境 ENV SPIGOT_HOME=/minecraft \：SPIGOT-server的默认目录SPIGOT_VER=latest \：默认版本为最新SPIGOT_AUTORESTART=yes：结合readme里写的，应该是如果mc内部的stop除了问题，">
+  <meta name="description" content="docker-spigotDockerfile： FROM nimmis/java:openjdk-8-jdk：指定基础镜像，配置java环境 ENV SPIGOT_HOME=/minecraft \：SPIGOT-server的默认目录SPIGOT_VER=latest \：默认版本为最新SPIGOT_AUTORESTART=yes：结合readme里写的，应该是如果mc内部的stop出了问题，">
 <meta name="keywords" content="Docker">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Docker学习日记 Day3">
 <meta property="og:url" content="http://yoursite.com/2017/07/09/Docker学习日记Day3/index.html">
 <meta property="og:site_name" content="FogDong&#39;s blog">
-<meta property="og:description" content="docker-spigotDockerfile： FROM nimmis/java:openjdk-8-jdk：指定基础镜像，配置java环境 ENV SPIGOT_HOME=/minecraft \：SPIGOT-server的默认目录SPIGOT_VER=latest \：默认版本为最新SPIGOT_AUTORESTART=yes：结合readme里写的，应该是如果mc内部的stop除了问题，">
-<meta property="og:updated_time" content="2017-07-09T11:03:23.000Z">
+<meta property="og:description" content="docker-spigotDockerfile： FROM nimmis/java:openjdk-8-jdk：指定基础镜像，配置java环境 ENV SPIGOT_HOME=/minecraft \：SPIGOT-server的默认目录SPIGOT_VER=latest \：默认版本为最新SPIGOT_AUTORESTART=yes：结合readme里写的，应该是如果mc内部的stop出了问题，">
+<meta property="og:updated_time" content="2017-07-09T11:08:25.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Docker学习日记 Day3">
-<meta name="twitter:description" content="docker-spigotDockerfile： FROM nimmis/java:openjdk-8-jdk：指定基础镜像，配置java环境 ENV SPIGOT_HOME=/minecraft \：SPIGOT-server的默认目录SPIGOT_VER=latest \：默认版本为最新SPIGOT_AUTORESTART=yes：结合readme里写的，应该是如果mc内部的stop除了问题，">
+<meta name="twitter:description" content="docker-spigotDockerfile： FROM nimmis/java:openjdk-8-jdk：指定基础镜像，配置java环境 ENV SPIGOT_HOME=/minecraft \：SPIGOT-server的默认目录SPIGOT_VER=latest \：默认版本为最新SPIGOT_AUTORESTART=yes：结合readme里写的，应该是如果mc内部的stop出了问题，">
 
   
 
@@ -137,7 +137,7 @@
 
   <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#docker-spigot"><span class="toc-text">docker-spigot</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Dockerfile："><span class="toc-text">Dockerfile：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#docker-run"><span class="toc-text">docker run</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#访问仓库"><span class="toc-text">访问仓库</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Docker-Hub"><span class="toc-text">Docker Hub</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数据管理"><span class="toc-text">数据管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#数据卷"><span class="toc-text">数据卷</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数据卷容器"><span class="toc-text">数据卷容器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#备份、恢复、迁移数据卷"><span class="toc-text">备份、恢复、迁移数据卷</span></a></li></ol></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#docker-spigot"><span class="toc-text">docker-spigot</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Dockerfile："><span class="toc-text">Dockerfile：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#docker-run"><span class="toc-text">docker run</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#访问仓库"><span class="toc-text">访问仓库</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Docker-Hub"><span class="toc-text">Docker Hub</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#私有仓库"><span class="toc-text">私有仓库</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数据管理"><span class="toc-text">数据管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#数据卷"><span class="toc-text">数据卷</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数据卷容器"><span class="toc-text">数据卷容器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#备份、恢复、迁移数据卷"><span class="toc-text">备份、恢复、迁移数据卷</span></a></li></ol></li></ol>
   </div>
 
 
@@ -182,14 +182,14 @@
     
       <h2 id="docker-spigot"><a href="#docker-spigot" class="headerlink" title="docker-spigot"></a><a href="https://github.com/nimmis/docker-spigot" target="_blank" rel="external">docker-spigot</a></h2><h3 id="Dockerfile："><a href="#Dockerfile：" class="headerlink" title="Dockerfile："></a>Dockerfile：</h3><ol>
 <li><code>FROM nimmis/java:openjdk-8-jdk</code>：指定基础镜像，配置java环境</li>
-<li><code>ENV SPIGOT_HOME=/minecraft \</code>：SPIGOT-server的默认目录<br><code>SPIGOT_VER=latest \</code>：默认版本为最新<br><code>SPIGOT_AUTORESTART=yes</code>：结合readme里写的，应该是如果mc内部的stop除了问题，就重新启动</li>
+<li><code>ENV SPIGOT_HOME=/minecraft \</code>：SPIGOT-server的默认目录<br><code>SPIGOT_VER=latest \</code>：默认版本为最新<br><code>SPIGOT_AUTORESTART=yes</code>：结合readme里写的，应该是如果mc内部的stop出了问题，就重新启动</li>
 <li><code>COPY rootfs /</code>：复制额外需要的文件<blockquote>
-<p>rootf中：<br>waitjava.sh处理mc错误的stop命令，在supervisor/conf.d里挑用了waitjava.sh<br>在usr/local/bin中指定了常用简便指令，eg：<code>mc_stop</code></p>
+<p>rootf中：<br>waitjava.sh处理mc错误的stop命令，在supervisor/conf.d里调用了waitjava.sh<br>在usr/local/bin中指定了常用简便指令，eg：<code>mc_stop</code></p>
 </blockquote>
 </li>
 </ol>
 <ol>
-<li><code>RUN apt-get update &amp;&amp; \</code><br><code> apt-get -y dist-upgrade &amp;&amp; \</code><br><code>printf “Build of nimmis/spigot:latest, date: %s\n”  <code>date -u +&quot;%Y-%m-%dT%H:%M:%SZ&quot;</code>  &gt; /etc/BUILDS/spigot &amp;&amp; \</code>：更新，并且更新一次就写一个更新文件，里面写明了更新的时间<br><code>apt-get install -y wget git &amp;&amp; \</code>：下载<br><code> /usr/sbin/useradd -s /bin/bash -d /minecraft -m minecraft &amp;&amp; \</code>：为mc创建特别用户给<br><code>apt-get clean all</code>：清理镜像中的缓存</li>
+<li><code>RUN apt-get update &amp;&amp; \</code><br><code> apt-get -y dist-upgrade &amp;&amp; \</code><br><code>printf “Build of nimmis/spigot:latest, date: %s\n”  <code>date -u +&quot;%Y-%m-%dT%H:%M:%SZ&quot;</code>  &gt; /etc/BUILDS/spigot &amp;&amp; \</code>：更新，并且更新一次就写一个更新文件，里面写明了更新的时间<br><code>apt-get install -y wget git &amp;&amp; \</code>：下载<br><code> /usr/sbin/useradd -s /bin/bash -d /minecraft -m minecraft &amp;&amp; \</code>：为mc创建特别用户<br><code>apt-get clean all</code>：清理镜像中的缓存</li>
 <li><code>EXPOSE 25565</code>：声明容器提供服务端口</li>
 </ol>
 <h3 id="docker-run"><a href="#docker-run" class="headerlink" title="docker run"></a>docker run</h3><p><code>docker run -d -p 25565:25565 -e EULA=true nimmis/spigot</code>：指定端口，并同意最终用户协议</p>
@@ -198,7 +198,7 @@
 <p> 仓库（Repository）是集中存放镜像的地方。一个容易混淆的概念是注册服务器（Registry）。实际上注册服务器是管理仓库的具体服务器，每个服务器上可以有多个仓库，而每个仓库下面有多个镜像。从这方面来说，仓库可以被认为是一个具体的项目或目录。例如对于仓库地址 dl.dockerpool.com/ubuntu 来说，dl.dockerpool.com 是注册服务器地址，ubuntu 是仓库名</p>
 </blockquote>
 <h3 id="Docker-Hub"><a href="#Docker-Hub" class="headerlink" title="Docker Hub"></a>Docker Hub</h3><p><code>docker search</code><br><code>docker pull</code><br><code>docker push</code></p>
-<p>###私有仓库<br><code>docker-registry</code>工具<br>安装：<code>sudo pip3 install docker-registry</code></p>
+<h3 id="私有仓库"><a href="#私有仓库" class="headerlink" title="私有仓库"></a>私有仓库</h3><p><code>docker-registry</code>工具<br>安装：<code>sudo pip3 install docker-registry</code></p>
 <h2 id="数据管理"><a href="#数据管理" class="headerlink" title="数据管理"></a>数据管理</h2><h3 id="数据卷"><a href="#数据卷" class="headerlink" title="数据卷"></a>数据卷</h3><blockquote>
 <p>数据卷是一个可供一个或多个容器使用的特殊目录，它绕过 UFS，可以提供很多有用的特性：</p>
 <ul>
