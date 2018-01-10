@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Elasticsearch学习笔记 | FogDong&#39;s blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="ES," />
+  
+
+  <meta name="description" content="ElasticSearch学习笔记 ####一、在本地（或服务器）上安装ES和中文分词插件ik MacOS 环境，直接使用homebrew安装 1brew install elasticsearch 安装中文分词插件ik 从github上下载源码并用mvn打包 12345git clone https://github.com/medcl/elasticsearch-analysis-ikcd e">
+<meta name="keywords" content="ES">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Elasticsearch学习笔记">
+<meta property="og:url" content="http://yoursite.com/2018/01/09/Elasticsearch学习笔记/index.html">
+<meta property="og:site_name" content="FogDong&#39;s blog">
+<meta property="og:description" content="ElasticSearch学习笔记 ####一、在本地（或服务器）上安装ES和中文分词插件ik MacOS 环境，直接使用homebrew安装 1brew install elasticsearch 安装中文分词插件ik 从github上下载源码并用mvn打包 12345git clone https://github.com/medcl/elasticsearch-analysis-ikcd e">
+<meta property="og:updated_time" content="2018-01-10T01:31:09.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Elasticsearch学习笔记">
+<meta name="twitter:description" content="ElasticSearch学习笔记 ####一、在本地（或服务器）上安装ES和中文分词插件ik MacOS 环境，直接使用homebrew安装 1brew install elasticsearch 安装中文分词插件ik 从github上下载源码并用mvn打包 12345git clone https://github.com/medcl/elasticsearch-analysis-ikcd e">
+
+  
+
+  
+    <link rel="icon" href="/images/crown.png">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?57e94d016e201fba3603a8a2b0263af0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/category/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tag/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#ElasticSearch学习笔记"><span class="toc-text">ElasticSearch学习笔记</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#二、elasticsearch基本概念"><span class="toc-text">二、elasticsearch基本概念</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#二、安装elasticsearch-js"><span class="toc-text">二、安装elasticsearch.js</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#三、调用接口"><span class="toc-text">三、调用接口</span></a></li></ol></li></ol></li></ol></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-Elasticsearch学习笔记" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">Elasticsearch学习笔记</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2018.01.09</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>FogDong</span>
+        </span>
+      
+
+      
+  <span class="article-category">
+    <i class="icon-list"></i>
+    <a class="article-category-link" href="/categories/ES/">ES</a>
+  </span>
+
+
+
+      
+        <span>
+          <i class="icon-comment"></i>
+          <a href="https://fogdong.github.io//2018/01/09/Elasticsearch学习笔记/#disqus_thread"></a>
+        </span>
+      
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <h1 id="ElasticSearch学习笔记"><a href="#ElasticSearch学习笔记" class="headerlink" title="ElasticSearch学习笔记"></a>ElasticSearch学习笔记</h1><hr>
+<p>####一、在本地（或服务器）上安装ES和中文分词插件ik</p>
+<p>MacOS 环境，直接使用homebrew安装</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew install elasticsearch</div></pre></td></tr></table></figure>
+<p>安装中文分词插件ik</p>
+<p>从github上下载源码并用mvn打包</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">git clone https://github.com/medcl/elasticsearch-analysis-ik</div><div class="line">cd elasticsearch-analysis-ik</div><div class="line">mvn clean</div><div class="line">mvn compile</div><div class="line">mvn package</div></pre></td></tr></table></figure>
+<p>找到target中release里的压缩包，解压后放到es所在的安装包中的plugin/ik中。</p>
+<p>（Mac中用homebrew安装的默认路径为/usr/local/Cellar）</p>
+<p>注意：插件的版本必须和ES相匹配。</p>
+<h4 id="二、elasticsearch基本概念"><a href="#二、elasticsearch基本概念" class="headerlink" title="二、elasticsearch基本概念"></a>二、elasticsearch基本概念</h4><ul>
+<li>Elastic 本质上是一个分布式数据库，允许多台服务器协同工作，每台服务器可以运行多个 Elastic 实例。</li>
+</ul>
+<p>单个 Elastic 实例称为一个节点（node）。一组节点构成一个集群（cluster）。</p>
+<ul>
+<li><p>Elastic 数据管理的顶层单位叫做 Index（索引）。它是单个数据库的同义词。每个 Index （即数据库）的名字必须是小写。</p>
+</li>
+<li><p>Index 里面单条的记录称为 Document（文档）。许多条 Document 构成了一个 Index。</p>
+</li>
+</ul>
+<p>Document 使用 JSON 格式表示。</p>
+<ul>
+<li>MySQL和ES中术语的对比</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>MySQL</th>
+<th>Elasticsearch</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Database</td>
+<td>Index</td>
+</tr>
+<tr>
+<td>Table</td>
+<td>Type</td>
+</tr>
+<tr>
+<td>Row</td>
+<td>Document</td>
+</tr>
+<tr>
+<td>Column</td>
+<td>Field</td>
+</tr>
+<tr>
+<td>Schema</td>
+<td>Mappping</td>
+</tr>
+<tr>
+<td>Index</td>
+<td>Everything Indexed by default</td>
+</tr>
+<tr>
+<td>SQL</td>
+<td>Query DSL</td>
+</tr>
+</tbody>
+</table>
+<h4 id="二、安装elasticsearch-js"><a href="#二、安装elasticsearch-js" class="headerlink" title="二、安装elasticsearch.js"></a>二、安装elasticsearch.js</h4><p>直接使用npm</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install elasticsearch.js --save</div></pre></td></tr></table></figure>
+<h4 id="三、调用接口"><a href="#三、调用接口" class="headerlink" title="三、调用接口"></a>三、调用接口</h4><p>1.实例化client</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> elasticsearch = <span class="built_in">require</span>(<span class="string">'elasticsearch'</span>);</div><div class="line"><span class="keyword">const</span> client = <span class="keyword">new</span> elasticsearch.Client(&#123;</div><div class="line"><span class="attr">host</span>: <span class="string">'127.0.0.1:9200'</span>,</div><div class="line"><span class="attr">log</span>: <span class="string">'trace'</span></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>2.创建index</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">client.indices.create(&#123;<span class="attr">index</span> : <span class="string">'test'</span>&#125;);</div></pre></td></tr></table></figure>
+<p>3.创建mapping</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">client.indices.putMapping(&#123;</div><div class="line"><span class="attr">index</span> : <span class="string">'test'</span>,</div><div class="line"><span class="attr">type</span> : <span class="string">'article'</span>,</div><div class="line"><span class="attr">body</span> : &#123;</div><div class="line"><span class="attr">article</span>: &#123;</div><div class="line"><span class="attr">properties</span>: &#123;</div><div class="line"><span class="attr">title</span>: &#123;</div><div class="line"><span class="attr">type</span>: <span class="string">'string'</span>,</div><div class="line"><span class="attr">term_vector</span>: <span class="string">'with_positions_offsets'</span>,</div><div class="line"><span class="attr">analyzer</span>: <span class="string">'ik'</span>,</div><div class="line"><span class="attr">search_analyzer</span>: <span class="string">'ik'</span>,</div><div class="line">&#125;,</div><div class="line"><span class="attr">content</span>: &#123;</div><div class="line"><span class="attr">type</span>: <span class="string">'string'</span>,</div><div class="line"><span class="attr">term_vector</span>: <span class="string">'with_positions_offsets'</span>,</div><div class="line"><span class="attr">analyzer</span>: <span class="string">'ik'</span>,</div><div class="line"><span class="attr">search_analyzer</span>: <span class="string">'ik'</span>,</div><div class="line">&#125;,</div><div class="line"><span class="attr">slug</span>: &#123;</div><div class="line"><span class="attr">type</span>: <span class="string">'string'</span>,</div><div class="line">&#125;,</div><div class="line"><span class="attr">tags</span>: &#123;</div><div class="line"><span class="attr">type</span>: <span class="string">'string'</span>,</div><div class="line"><span class="attr">index</span> : <span class="string">'not_analyzed'</span>,</div><div class="line">&#125;,</div><div class="line"><span class="attr">update_date</span>: &#123;</div><div class="line"><span class="attr">type</span> : <span class="string">'date'</span>,</div><div class="line"><span class="attr">index</span> : <span class="string">'not_analyzed'</span>,</div><div class="line">&#125;</div><div class="line">&#125;</div><div class="line">&#125;</div><div class="line">&#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>4.调入测试数据</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">client.index(&#123;</div><div class="line"><span class="attr">index</span> : <span class="string">'test'</span>,</div><div class="line"><span class="attr">type</span> : <span class="string">'article'</span>,</div><div class="line"><span class="attr">id</span> : <span class="string">'100'</span>,</div><div class="line"><span class="attr">body</span> : &#123;</div><div class="line"><span class="attr">title</span> : <span class="string">'什么是 JS？'</span>,</div><div class="line"><span class="attr">slug</span> :<span class="string">'what-is-js'</span>,</div><div class="line"><span class="attr">tags</span> : [<span class="string">'JS'</span>, <span class="string">'JavaScript'</span>, <span class="string">'TEST'</span>],</div><div class="line"><span class="attr">content</span> : <span class="string">'JS 是 JavaScript 的缩写！'</span>,</div><div class="line"><span class="attr">update_date</span> : <span class="string">'2018-1-7T13:05:55Z'</span>,</div><div class="line">&#125;</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<p>5.搜索测试</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">client.search(&#123;</div><div class="line"><span class="attr">index</span> : <span class="string">'test'</span>,</div><div class="line"><span class="attr">type</span> : <span class="string">'article'</span>,</div><div class="line"><span class="attr">q</span> : <span class="string">'JS'</span>,</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>6.详细匹配</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">client.search(&#123;</div><div class="line"><span class="attr">index</span>: <span class="string">'test'</span>,</div><div class="line"><span class="attr">body</span>: &#123;</div><div class="line"><span class="attr">query</span>: &#123;</div><div class="line"><span class="attr">match</span>: &#123;</div><div class="line"><span class="attr">title</span>: <span class="string">'JS'</span>,</div><div class="line"><span class="attr">content</span>: <span class="string">'搜索'</span></div><div class="line">&#125;</div><div class="line">&#125;</div><div class="line">&#125;</div><div class="line">&#125;, <span class="function"><span class="keyword">function</span> (<span class="params">error, response</span>) </span>&#123;</div><div class="line"><span class="comment">// ...</span></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>ES支持一种JSON格式的查询，叫做DSL，domain specific language。</p>
+
+    
+  </div>
+</article>
+
+</div>
+
+
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/category/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tag/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+  <section class="disqus-comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </section>
+
+  <script>
+    var disqus_shortname = 'fogdong';
+    
+    var disqus_url = 'http://yoursite.com/2018/01/09/Elasticsearch学习笔记/';
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+  <script id="dsq-count-scr" src="//fogdong.disqus.com/count.js" async></script>
+
+
+
+    
+
+
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>
