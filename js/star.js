@@ -1,5 +1,3 @@
-let canvas = document.getElementById("starlight");
-let context = canvas.getContext("2d");
 let w = screen.width;
 let h = screen.height/2;
 let colors = [
@@ -13,60 +11,86 @@ let colors = [
   ["#27424d", "#344243", "#364143", "#203f49", "#021623"], //dark blue
 ]
 let color = colors[Math.floor(Math.random()*8)]
-canvas.setAttribute('width', w)
-canvas.setAttribute('height', h)
+//canvas.setAttribute('width', w)
+//canvas.setAttribute('height', h)
 
-function run(star, x, y, c) {
-  star.save()
-  star.clearRect(0,0, w, h);
-  for (let i = 0 ; i < 300; i++) {
-    star.beginPath();
-    for (let j = 0; j < 5; j++) {
-      star.lineTo(Math.cos((18+j*72)/180*Math.PI)*10+x[i],
-        -Math.sin((18+j*72)/180*Math.PI)*10+y[i]);
-      star.lineTo(Math.cos((54+j*72)/180*Math.PI)*5+x[i],
-        -Math.sin((54+j*72)/180*Math.PI)*5+y[i]);
-    }
-    star.closePath();
-    star.globalAlpha = 0.6
-    star.shadowOffsetX = 2;
-    star.shadowOffsetY = 2;
-    star.shadowBlur = 4;
-    star.shadowColor = "rgba(0, 0, 0, 0.15)";
-    star.fillStyle = color[c[i]];
-    star.rotate(y[i]*Math.PI/180/150);
-    star.fill();
-  }
-  star.restore()
+let setting = {
+  width: screen.width,
+  height: screen.height/2,
+  canvas: document.getElementById("starlight"),
+  content: null,
+  starArr: [],
+  number: 50
 }
 
-let x = [], y = [], c = []
-for (let i = 0 ; i < 300; i++) {
-  x.push(Math.random()*w)
-  y.push(Math.random()*h)
-  c.push(Math.floor(Math.random()*6))
-  context.beginPath();
-  for (let j = 0; j < 5; j++) {
-    context.lineTo(Math.cos((18+j*72)/180*Math.PI)*10+x[i],
-      -Math.sin((18+j*72)/180*Math.PI)*10+y[i]);
-    context.lineTo(Math.cos((54+j*72)/180*Math.PI)*5+x[i],
-      -Math.sin((54+j*72)/180*Math.PI)*5+y[i]);
-  }
-  context.closePath();
-  context.globalAlpha = 0.6
-  context.shadowOffsetX = 2;
-  context.shadowOffsetY = 2;
-  context.shadowBlur = 4;
-  context.shadowColor = "rgba(0, 0, 0, 0.15)";
-  context.fillStyle = color[c[i]];
-  context.fill();
-}
-
-(function drawFrame(){
-  y = y.map(o => {
-    return o + Math.random()*0.35
+setting.canvas.setAttribute("width", setting.width)
+setting.canvas.setAttribute("height", setting.height)
+setting.content = setting.canvas.getContext("2d")
+for (let i = 0; i < setting.number; i++) {
+  let minus = Math.random() < 0.5?-1:1;
+  setting.starArr.push({
+    x: Math.random()*w,
+    y: Math.random()*h,
+    c: Math.floor(Math.random()*6),
+    deg: Math.random()*6*minus,
+    scale: 3+Math.random()*3,
+    alpha: 0.1+Math.random()*0.2
   })
-  window.requestAnimationFrame(drawFrame);
-  context.fillRect(0, 0, w, h);  //注意这
-  run(context, x, y,c);
-}())
+}
+
+function updateStar() {
+  setting.content.clearRect(0, 0, setting.width, setting.height)
+  setting.content.save()
+  for (let i = 0; i < setting.starArr.length; i++) {
+    let h = 0.5*setting.starArr[i].scale
+    setting.starArr[i].x += Math.tan(setting.starArr[i].deg*Math.PI/180)*h/2
+    setting.starArr[i].y = setting.starArr[i].y + h
+    
+    if (setting.starArr[i].x < 0 || setting.starArr[i].x > setting.width || setting.starArr[i].y > setting.height) {
+      setting.starArr.splice(i--, 1)
+      continue;
+    }
+    
+    setting.content.beginPath()
+    for (let j = 0; j < 5; j++) {
+      setting.content.lineTo(Math.cos((18+j*72)/180*Math.PI)*10+setting.starArr[i].x,
+        -Math.sin((18+j*72)/180*Math.PI)*10+setting.starArr[i].y)
+      setting.content.lineTo(Math.cos((54+j*72)/180*Math.PI)*5+setting.starArr[i].x,
+        -Math.sin((54+j*72)/180*Math.PI)*5+setting.starArr[i].y)
+    }
+    setting.content.closePath();
+    setting.content.globalAlpha = 0.6
+    setting.content.shadowOffsetX = 2
+    setting.content.shadowOffsetY = 2
+    setting.content.shadowBlur = 4
+    setting.content.shadowColor = "rgba(0, 0, 0, 0.15)"
+    setting.globalAlpha = setting.starArr[i].alpha
+    setting.content.fillStyle = color[setting.starArr[i].c]
+    setting.content.fill()
+  }
+  setting.content.restore()
+  window.requestAnimationFrame(updateStar)
+}
+
+updateStar()
+
+function createNewStar() {
+  setTimeout(function() {
+    if (setting.starArr.length < 90) {
+      for (let i = 0; i < 10; i++) {
+        let minus = Math.random() < 0.5?-1:1;
+        setting.starArr.push({
+          x: Math.random()*w,
+          y: 0,
+          c: Math.floor(Math.random()*6),
+          deg: Math.random()*6*minus,
+          scale: 3+Math.random()*3,
+          alpha: 0.1+Math.random()*0.2
+        })
+      }
+    }
+    createNewStar()
+  }, Math.random()*200 + 500)
+}
+
+createNewStar()
