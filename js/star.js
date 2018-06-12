@@ -36,7 +36,7 @@ for (var i = 0; i < setting.number; i++) {
     c: Math.floor(Math.random()*6),
     deg: Math.random()*6*minus,
     scale: 3+Math.random()*3,
-    alpha: 0.1+Math.random()*0.2
+    alpha: 0.5+Math.random()*0.1
   })
 }
 
@@ -60,13 +60,12 @@ function updateStar() {
       setting.content.lineTo(Math.cos((54+j*72)/180*Math.PI)*5+setting.starArr[i].x,
         -Math.sin((54+j*72)/180*Math.PI)*5+setting.starArr[i].y)
     }
-    setting.content.closePath();
-    setting.content.globalAlpha = 0.6
+    setting.content.closePath()
+    setting.content.globalAlpha = setting.starArr[i].alpha
     setting.content.shadowOffsetX = 2
     setting.content.shadowOffsetY = 2
     setting.content.shadowBlur = 4
     setting.content.shadowColor = "rgba(0, 0, 0, 0.15)"
-    setting.globalAlpha = setting.starArr[i].alpha
     setting.content.fillStyle = color[setting.starArr[i].c]
     setting.content.fill()
   }
@@ -87,7 +86,7 @@ function createNewStar() {
           c: Math.floor(Math.random()*6),
           deg: Math.random()*6*minus,
           scale: 3+Math.random()*3,
-          alpha: 0.1+Math.random()*0.2
+          alpha: 0.5+Math.random()*0.1
         })
       }
     }
