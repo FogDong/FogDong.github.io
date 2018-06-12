@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>用canvas实现简单的星空效果 | FogDong&#39;s blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="canvas,前端,JS," />
+  
+
+  <meta name="description" content="用canvas实现简单的星空效果因为日常被人说博客没文章所以就算只是写了个很简单的小星星也努力的把过程拼凑出来写个博客辣！（。  Step.0涉及到的所有的代码都放在了我的github上首先看一下最终的效果图，可以参考我的博客首页或者下面这张图 Step.1第一步当然是用canvas画个小星星啦✨123456for (let i = 0; i &amp;lt; 5; i++) &amp;#123;content.">
+<meta name="keywords" content="canvas,前端,JS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用canvas实现简单的星空效果">
+<meta property="og:url" content="http://yoursite.com/2018/06/12/用canvas实现简单的星空效果/index.html">
+<meta property="og:site_name" content="FogDong&#39;s blog">
+<meta property="og:description" content="用canvas实现简单的星空效果因为日常被人说博客没文章所以就算只是写了个很简单的小星星也努力的把过程拼凑出来写个博客辣！（。  Step.0涉及到的所有的代码都放在了我的github上首先看一下最终的效果图，可以参考我的博客首页或者下面这张图 Step.1第一步当然是用canvas画个小星星啦✨123456for (let i = 0; i &amp;lt; 5; i++) &amp;#123;content.">
+<meta property="og:image" content="http://ok2ra0say.bkt.clouddn.com/img_1944.png">
+<meta property="og:updated_time" content="2018-06-12T07:10:40.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="用canvas实现简单的星空效果">
+<meta name="twitter:description" content="用canvas实现简单的星空效果因为日常被人说博客没文章所以就算只是写了个很简单的小星星也努力的把过程拼凑出来写个博客辣！（。  Step.0涉及到的所有的代码都放在了我的github上首先看一下最终的效果图，可以参考我的博客首页或者下面这张图 Step.1第一步当然是用canvas画个小星星啦✨123456for (let i = 0; i &amp;lt; 5; i++) &amp;#123;content.">
+<meta name="twitter:image" content="http://ok2ra0say.bkt.clouddn.com/img_1944.png">
+
+  
+
+  
+    <link rel="icon" href="/images/crown.png">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?57e94d016e201fba3603a8a2b0263af0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+</head>
+<body>
+<canvas id="starlight"></canvas>
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/category/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tag/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#用canvas实现简单的星空效果"><span class="toc-text">用canvas实现简单的星空效果</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Step-0"><span class="toc-text">Step.0</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Step-1"><span class="toc-text">Step.1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Step-2"><span class="toc-text">Step.2</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Step-3"><span class="toc-text">Step.3</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Step-4"><span class="toc-text">Step.4</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Step-5"><span class="toc-text">Step.5</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Finished"><span class="toc-text">Finished!</span></a></li></ol></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-用canvas实现简单的星空效果" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">用canvas实现简单的星空效果</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2018.06.12</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>FogDong</span>
+        </span>
+      
+
+      
+  <span class="article-category">
+    <i class="icon-list"></i>
+    <a class="article-category-link" href="/categories/前端/">前端</a>
+  </span>
+
+
+
+      
+        <span>
+          <i class="icon-comment"></i>
+          <a href="https://fogdong.github.io//2018/06/12/用canvas实现简单的星空效果/#disqus_thread"></a>
+        </span>
+      
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <h1 id="用canvas实现简单的星空效果"><a href="#用canvas实现简单的星空效果" class="headerlink" title="用canvas实现简单的星空效果"></a>用canvas实现简单的星空效果</h1><p><del>因为日常被人说博客没文章所以就算只是写了个很简单的小星星也努力的把过程拼凑出来写个博客辣！（。</del></p>
+<hr>
+<h2 id="Step-0"><a href="#Step-0" class="headerlink" title="Step.0"></a>Step.0</h2><p>涉及到的所有的代码都放在了我的<a href="https://github.com/FogDong/StarLight" target="_blank" rel="external">github</a>上<br>首先看一下最终的效果图，可以参考我的<a href="https://fogdong.github.io/" target="_blank" rel="external">博客首页</a>或者下面这张图<br><img src="http://ok2ra0say.bkt.clouddn.com/img_1944.png" alt=""></p>
+<h2 id="Step-1"><a href="#Step-1" class="headerlink" title="Step.1"></a>Step.1</h2><p>第一步当然是用canvas画个小星星啦✨<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++) &#123;</div><div class="line">content.lineTo(<span class="built_in">Math</span>.cos((<span class="number">18</span>+j*<span class="number">72</span>)/<span class="number">180</span>*<span class="built_in">Math</span>.PI)*R+x,</div><div class="line">-<span class="built_in">Math</span>.sin((<span class="number">18</span>+j*<span class="number">72</span>)/<span class="number">180</span>*<span class="built_in">Math</span>.PI)*R+y)</div><div class="line">content.lineTo(<span class="built_in">Math</span>.cos((<span class="number">54</span>+j*<span class="number">72</span>)/<span class="number">180</span>*<span class="built_in">Math</span>.PI)*r+x,</div><div class="line">-<span class="built_in">Math</span>.sin((<span class="number">54</span>+j*<span class="number">72</span>)/<span class="number">180</span>*<span class="built_in">Math</span>.PI)*r+y)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>画星星实际上是需要十个顶点，一个是外圈的五个顶点，用R指定，一个是内圈的五个顶点，用r指定，x和y则是圆心坐标</p>
+<h2 id="Step-2"><a href="#Step-2" class="headerlink" title="Step.2"></a>Step.2</h2><p>确定整个星空的组成部分<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> setting = &#123;</div><div class="line"><span class="attr">width</span>: screen.width,</div><div class="line"><span class="attr">height</span>: screen.height,</div><div class="line"><span class="attr">canvas</span>: <span class="literal">null</span>,</div><div class="line"><span class="attr">content</span>: <span class="literal">null</span>,</div><div class="line"><span class="attr">maxStar</span>: <span class="number">100</span>,</div><div class="line"><span class="attr">newStar</span>: <span class="number">6</span>,</div><div class="line"><span class="attr">starArr</span>: [],</div><div class="line"><span class="attr">number</span>: <span class="number">100</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<ul>
+<li>width和height用于指定canvas的大小，以及为之后的随机生成星星的位置做准备</li>
+<li>maxStar用来指定页面上最多能同时存在几个星星</li>
+<li>newStar用来指定同时新生成几个星星</li>
+<li>starArr用于存放星星</li>
+<li>number用于指定初始星星的个数</li>
+</ul>
+<h2 id="Step-3"><a href="#Step-3" class="headerlink" title="Step.3"></a>Step.3</h2><p>初始化canvas画布<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">init</span> (<span class="params">canvas, w, h</span>) </span>&#123;</div><div class="line">setting.canvas = <span class="built_in">document</span>.getElementById(canvas)</div><div class="line">setting.canvas.setAttribute(<span class="string">"width"</span>, w)</div><div class="line">setting.canvas.setAttribute(<span class="string">"height"</span>, h)</div><div class="line">setting.width = w</div><div class="line">setting.height = h</div><div class="line">setting.content = setting.canvas.getContext(<span class="string">"2d"</span>)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>生成一百个随机坐标并push到starArr数组中<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; setting.number; i++) &#123;</div><div class="line"><span class="keyword">let</span> minus = <span class="built_in">Math</span>.random() &lt; <span class="number">0.5</span>?<span class="number">-1</span>:<span class="number">1</span>;</div><div class="line">setting.starArr.push(&#123;</div><div class="line"><span class="attr">x</span>: <span class="built_in">Math</span>.random()*setting.width,</div><div class="line"><span class="attr">y</span>: <span class="built_in">Math</span>.random()*setting.height,</div><div class="line"><span class="attr">c</span>: <span class="built_in">Math</span>.floor(<span class="built_in">Math</span>.random()*<span class="number">6</span>),</div><div class="line"><span class="comment">// 用于指定星星的颜色，因为我设置了一个颜色数组，有8种配色方案，为了使效果更为美观</span></div><div class="line">deg: <span class="built_in">Math</span>.random()*<span class="number">6</span>*minus,</div><div class="line"><span class="attr">scale</span>: <span class="number">3</span>+<span class="built_in">Math</span>.random()*<span class="number">3</span>,</div><div class="line"><span class="attr">alpha</span>: <span class="number">0.5</span>+<span class="built_in">Math</span>.random()*<span class="number">0.1</span> <span class="comment">// 透明度</span></div><div class="line">&#125;)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="Step-4"><a href="#Step-4" class="headerlink" title="Step.4"></a>Step.4</h2><p>用requestAnimationFrame刷新星星的移动<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">updateStar</span>(<span class="params"></span>) </span>&#123;</div><div class="line">setting.content.clearRect(<span class="number">0</span>, <span class="number">0</span>, setting.width, setting.height) <span class="comment">//清除画布</span></div><div class="line">setting.content.save() <span class="comment">//save与restore对应</span></div><div class="line"></div><div class="line"><span class="comment">// 更改x,y坐标</span></div><div class="line"><span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; setting.starArr.length; i++) &#123;</div><div class="line"><span class="keyword">let</span> h = <span class="number">0.35</span>*setting.starArr[i].scale</div><div class="line">setting.starArr[i].x += <span class="built_in">Math</span>.tan(setting.starArr[i].deg*<span class="built_in">Math</span>.PI/<span class="number">180</span>)*h/<span class="number">2</span></div><div class="line">setting.starArr[i].y = setting.starArr[i].y + h</div><div class="line"></div><div class="line"><span class="comment">// 若星星超出屏幕范围，则从数组中删去 </span></div><div class="line"><span class="keyword">if</span> (setting.starArr[i].x &lt; <span class="number">0</span> || setting.starArr[i].x &gt; setting.width || setting.starArr[i].y &gt; setting.height) &#123;</div><div class="line">setting.starArr.splice(i--, <span class="number">1</span>)</div><div class="line"><span class="keyword">continue</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// 重绘星星</span></div><div class="line">setting.content.beginPath()</div><div class="line"><span class="keyword">for</span> (<span class="keyword">var</span> j = <span class="number">0</span>; j &lt; <span class="number">5</span>; j++) &#123;</div><div class="line">setting.content.lineTo(<span class="built_in">Math</span>.cos((<span class="number">18</span>+j*<span class="number">72</span>)/<span class="number">180</span>*<span class="built_in">Math</span>.PI)*<span class="number">10</span>+setting.starArr[i].x,</div><div class="line">-<span class="built_in">Math</span>.sin((<span class="number">18</span>+j*<span class="number">72</span>)/<span class="number">180</span>*<span class="built_in">Math</span>.PI)*<span class="number">10</span>+setting.starArr[i].y)</div><div class="line">setting.content.lineTo(<span class="built_in">Math</span>.cos((<span class="number">54</span>+j*<span class="number">72</span>)/<span class="number">180</span>*<span class="built_in">Math</span>.PI)*<span class="number">5</span>+setting.starArr[i].x,</div><div class="line">-<span class="built_in">Math</span>.sin((<span class="number">54</span>+j*<span class="number">72</span>)/<span class="number">180</span>*<span class="built_in">Math</span>.PI)*<span class="number">5</span>+setting.starArr[i].y)</div><div class="line">&#125;</div><div class="line">setting.content.closePath();</div><div class="line"></div><div class="line"><span class="comment">// 设置透明度、阴影、颜色等</span></div><div class="line">setting.content.globalAlpha = setting.starArr[i].alpha</div><div class="line">setting.content.shadowOffsetX = <span class="number">2</span></div><div class="line">setting.content.shadowOffsetY = <span class="number">2</span></div><div class="line">setting.content.shadowBlur = <span class="number">4</span></div><div class="line">setting.content.shadowColor = <span class="string">"rgba(0, 0, 0, 0.15)"</span></div><div class="line">setting.content.fillStyle = color[setting.starArr[i].c]</div><div class="line">setting.content.fill()</div><div class="line">&#125;</div><div class="line">setting.content.restore()</div><div class="line"><span class="built_in">window</span>.requestAnimationFrame(updateStar)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="Step-5"><a href="#Step-5" class="headerlink" title="Step.5"></a>Step.5</h2><p>星星超出屏幕范围后从星星数组中删除，并且要每隔一段时间重新生成星星<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">createNewStar</span>(<span class="params"></span>) </span>&#123;</div><div class="line">setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line"><span class="keyword">if</span> (setting.starArr.length &lt; setting.maxStar) &#123;</div><div class="line"><span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; setting.newStar; i++) &#123;</div><div class="line"><span class="keyword">let</span> minus = <span class="built_in">Math</span>.random() &lt; <span class="number">0.5</span>?<span class="number">-1</span>:<span class="number">1</span>;</div><div class="line">setting.starArr.push(&#123;</div><div class="line"><span class="attr">x</span>: <span class="built_in">Math</span>.random()*setting.width,</div><div class="line"><span class="attr">y</span>: <span class="number">0</span>,</div><div class="line"><span class="attr">c</span>: <span class="built_in">Math</span>.floor(<span class="built_in">Math</span>.random()*<span class="number">6</span>),</div><div class="line"><span class="attr">deg</span>: <span class="built_in">Math</span>.random()*<span class="number">6</span>*minus,</div><div class="line"><span class="attr">scale</span>: <span class="number">3</span>+<span class="built_in">Math</span>.random()*<span class="number">3</span>,</div><div class="line"><span class="attr">alpha</span>: <span class="number">0.5</span>+<span class="built_in">Math</span>.random()*<span class="number">0.1</span></div><div class="line">&#125;)</div><div class="line">&#125;</div><div class="line">&#125;</div><div class="line">createNewStar()</div><div class="line">&#125;, <span class="built_in">Math</span>.random()*<span class="number">200</span> + <span class="number">500</span>)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="Finished"><a href="#Finished" class="headerlink" title="Finished!"></a>Finished!</h2><p>完工啦(o´ω`o)！<br>我把自己写的那份放到<a href="https://github.com/FogDong/StarLight" target="_blank" rel="external">github</a>上啦！<br>如果有人想要使用的话（<del>虽然感觉并没有人会用</del>）<br>可以先引入js文件<br>然后<br>// 传入canvas的id，想要的canvas的大小<br>StarLight.init(“canvas”, screen.width, screen.height)<br>// 直接使用就好啦(๑•́ ∀ •̀๑)！<br>StarLight.star()<br>// 可以调用set来设置初始的星星个数及页面上最大的个数和每次新生成的个数<br>StarLight.set (num, maxStar, newStar)</p>
+
+    
+  </div>
+</article>
+
+</div>
+
+
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/category/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tag/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+  <section class="disqus-comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </section>
+
+  <script>
+    var disqus_shortname = 'fogdong';
+    
+    var disqus_url = 'http://yoursite.com/2018/06/12/用canvas实现简单的星空效果/';
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+  <script id="dsq-count-scr" src="//fogdong.disqus.com/count.js" async></script>
+
+
+
+    
+
+
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
