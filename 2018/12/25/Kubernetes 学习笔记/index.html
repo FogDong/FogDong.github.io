@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Kubernetes 学习笔记 | FogDong&#39;s blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Docker,Kubernetes," />
+  
+
+  <meta name="description" content="什么是KubernetesKubernetes 是 Google 开源的基于容器技术的分布式架构领先方案，提供应用部署、维护、扩展机制等功能，利用 Kubernetes 能方便地管理跨机器运行容器化的应用。 单容器（ contianer ）所遇到的问题  需要被管理 网络环境复杂 容器需要被调度、分发，以及配置负载均衡 数据需要被保存在其他地方  即   使用 Docker 对应用程序打包、实例化">
+<meta name="keywords" content="Docker,Kubernetes">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kubernetes 学习笔记">
+<meta property="og:url" content="http://yoursite.com/2018/12/25/Kubernetes 学习笔记/index.html">
+<meta property="og:site_name" content="FogDong&#39;s blog">
+<meta property="og:description" content="什么是KubernetesKubernetes 是 Google 开源的基于容器技术的分布式架构领先方案，提供应用部署、维护、扩展机制等功能，利用 Kubernetes 能方便地管理跨机器运行容器化的应用。 单容器（ contianer ）所遇到的问题  需要被管理 网络环境复杂 容器需要被调度、分发，以及配置负载均衡 数据需要被保存在其他地方  即   使用 Docker 对应用程序打包、实例化">
+<meta property="og:updated_time" content="2018-12-25T14:23:16.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kubernetes 学习笔记">
+<meta name="twitter:description" content="什么是KubernetesKubernetes 是 Google 开源的基于容器技术的分布式架构领先方案，提供应用部署、维护、扩展机制等功能，利用 Kubernetes 能方便地管理跨机器运行容器化的应用。 单容器（ contianer ）所遇到的问题  需要被管理 网络环境复杂 容器需要被调度、分发，以及配置负载均衡 数据需要被保存在其他地方  即   使用 Docker 对应用程序打包、实例化">
+
+  
+
+  
+    <link rel="icon" href="/images/crown.png">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?57e94d016e201fba3603a8a2b0263af0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+</head>
+<body>
+<canvas id="starlight"></canvas>
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/category/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tag/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是Kubernetes"><span class="toc-text">什么是Kubernetes</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#核心概念"><span class="toc-text">核心概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#网络预置"><span class="toc-text">网络预置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#设计原则"><span class="toc-text">设计原则</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#声明式编程（Declarative）"><span class="toc-text">声明式编程（Declarative）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Level-triggered"><span class="toc-text">Level-triggered</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Pod"><span class="toc-text">Pod</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#基本概念"><span class="toc-text">基本概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pod-的五大状态（生命周期，pod-phase）"><span class="toc-text">pod 的五大状态（生命周期，pod phase）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pod-的重启策略"><span class="toc-text">pod 的重启策略</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#API"><span class="toc-text">API</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#API-资源结构"><span class="toc-text">API 资源结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#API-扩展方法"><span class="toc-text">API 扩展方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RC-RS-Deployment"><span class="toc-text">RC, RS, Deployment</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#RC"><span class="toc-text">RC</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RS"><span class="toc-text">RS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Deployment"><span class="toc-text">Deployment</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PV-PVC"><span class="toc-text">PV, PVC</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-Kubernetes 学习笔记" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">Kubernetes 学习笔记</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2018.12.25</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>FogDong</span>
+        </span>
+      
+
+      
+  <span class="article-category">
+    <i class="icon-list"></i>
+    <a class="article-category-link" href="/categories/Kubernetes/">Kubernetes</a>
+  </span>
+
+
+
+      
+        <span>
+          <i class="icon-comment"></i>
+          <a href="https://fogdong.github.io//2018/12/25/Kubernetes 学习笔记/#disqus_thread"></a>
+        </span>
+      
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <h2 id="什么是Kubernetes"><a href="#什么是Kubernetes" class="headerlink" title="什么是Kubernetes"></a>什么是Kubernetes</h2><p>Kubernetes 是 Google 开源的基于容器技术的分布式架构领先方案，提供应用部署、维护、扩展机制等功能，利用 Kubernetes 能方便地管理跨机器运行容器化的应用。</p>
+<p>单容器（ contianer ）所遇到的问题</p>
+<ul>
+<li>需要被管理</li>
+<li>网络环境复杂</li>
+<li>容器需要被调度、分发，以及配置负载均衡</li>
+<li>数据需要被保存在其他地方</li>
+</ul>
+<p>即 </p>
+<ul>
+<li>使用 Docker 对应用程序打包、实例化、运行</li>
+<li>以集群的方式运行、管理跨机器的容器</li>
+<li>解决 Docker 跨机器容器之间的通讯问题</li>
+</ul>
+<h2 id="核心概念"><a href="#核心概念" class="headerlink" title="核心概念"></a>核心概念</h2><p>分为 master 和 node 节点，master 为集群控制节点<br>master 节点通常会占据一个独立的服务器（高可用部署建议使用三台服务器（如果 master 和 etcd 部在一起的话））</p>
+<p>master上：etcd, controller, scheduler, api server</p>
+<ul>
+<li><strong>etcd</strong>: key-value 存储，集群状态管理，是运行在多节点上的分布式键值存储，高可用（奇数个，必须半数以上的选举，容错能力限制于节点数的一半，选举 raft）</li>
+<li><strong>controller</strong>：控制器（多个控制器组成）选举</li>
+<li><strong>scheduler</strong>：调度器，负责资源调度（pod 调度）的进程 选举。scheduler 的职责很明确，就是负责调度 pod 到合适的 Node 上。如果把 scheduler 看成一个黑匣子，那么它的输入是 pod 和由多个 Node 组成的列表，输出是 Pod 和一个 Node 的绑定，即将这个 pod 部署到这个 Node 上。Kubernetes 目前提供了调度算法，但是同样也保留了接口，用户可以根据自己的需求定义自己的调度算法。</li>
+<li><strong>api server</strong>：暴露接口，处理请求。提供了资源操作的唯一入口，并提供认证、授权、访问控制、API 注册和发现等机制。APIServer负责对外提供RESTful的 Kubernetes API 服务，它是系统管理指令的统一入口，任何对资源进行增删改查的操作都要交给 APIServer 处理后再提交给 etcd，kubectl（ Kubernetes 提供的客户端工具，该工具内部就是对 Kubernetes API 的调用）是直接和 APIServer 交互的。</li>
+</ul>
+<p>node上：kubelet, kubeproxy, runtime</p>
+<ul>
+<li><strong>kubelet</strong>：管理 pod，负责 pod 对应的容器的创建、启停等任务，同时与 master 节点密切协作，实现集群管理的基本功能</li>
+<li><strong>kubeproxy</strong>： 实现 kubernetes service 的通信与负载均衡机制的重要组件</li>
+<li><strong>runtime</strong>: runtime 指的是容器运行环境，目前 Kubernetes 支持 docker 和 rkt 两种容器。</li>
+</ul>
+<p>除了核心组件，还有一些推荐的 Add-ons：</p>
+<ul>
+<li><strong>kube-dns</strong>：负责为整个集群提供 DNS 服务</li>
+<li><strong>Ingress Controller</strong>：为服务提供外网入口</li>
+<li><strong>Heapster</strong>：提供资源监控</li>
+<li><strong>Dashboard</strong>：提供GUI</li>
+<li><strong>Federation</strong>：提供跨可用区的集群</li>
+<li><strong>Fluentd-elasticsearch</strong>：提供集群日志采集、存储与查询</li>
+</ul>
+<h3 id="网络预置"><a href="#网络预置" class="headerlink" title="网络预置"></a>网络预置</h3><ul>
+<li>所有 pods 之间可以相互通信</li>
+<li>所有 pods 和 nodes 可以相互通信</li>
+<li>不做 NAT</li>
+</ul>
+<h2 id="设计原则"><a href="#设计原则" class="headerlink" title="设计原则"></a>设计原则</h2><h3 id="声明式编程（Declarative）"><a href="#声明式编程（Declarative）" class="headerlink" title="声明式编程（Declarative）"></a>声明式编程（Declarative）</h3><p>声明式与命令式的区别</p>
+<blockquote>
+<p>Declarative 的定义是用户设定期望的状态，系统会知道它需要执行什么操作，来达到期望的状态。<br>而对于 Imperative，需要用户告诉系统需要做什么。比如说用户说创建一个新的 Container，系统才会创建一个新的 Container。</p>
+</blockquote>
+<h3 id="Level-triggered"><a href="#Level-triggered" class="headerlink" title="Level-triggered"></a>Level-triggered</h3><h2 id="Pod"><a href="#Pod" class="headerlink" title="Pod"></a>Pod</h2><h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><ul>
+<li>Kubernetes 中最小计算和被调度单元</li>
+<li>是多个容器的集合，pod 中的容器共享 <strong>namespace</strong> 和 <strong>volume</strong></li>
+<li>一 pod 一 ip</li>
+</ul>
+<h3 id="pod-的五大状态（生命周期，pod-phase）"><a href="#pod-的五大状态（生命周期，pod-phase）" class="headerlink" title="pod 的五大状态（生命周期，pod phase）"></a>pod 的五大状态（生命周期，pod phase）</h3><ul>
+<li><strong>Pending</strong>：系统已经接受 pod 实例的创建，但其中所包含容器的一个或者多个 image 还没有创建成功。Pending 包含调度计算与通过网络创建 image，所以此 phase 的时间可能会有点长。</li>
+<li><strong>Running</strong>：Pod 已经被调度到某个 node 上，pod 包含的所有容器已经创建完成，至少有一个容器正常运行或者处于启动与重启动过程。</li>
+<li><strong>Failed</strong>：Pod 中所有容器已终止运行，至少有一个容器非正常结束，比如退出码非零，被系统强制杀死等。</li>
+<li><strong>Succeeded</strong>：Pod 中的所有容器正常终止，并且不会再次启动。</li>
+<li><strong>Unknown</strong>：无法取得 pod 状态，一般是网络问题引起。</li>
+</ul>
+<h3 id="pod-的重启策略"><a href="#pod-的重启策略" class="headerlink" title="pod 的重启策略"></a>pod 的重启策略</h3><ul>
+<li><strong>Always</strong>：总是重启</li>
+<li><strong>Never</strong>：从不重启</li>
+<li><strong>OnFailure</strong>：失败时重启</li>
+</ul>
+<h2 id="API"><a href="#API" class="headerlink" title="API"></a>API</h2><h3 id="API-资源结构"><a href="#API-资源结构" class="headerlink" title="API 资源结构"></a>API 资源结构</h3><ul>
+<li><strong>apiVersion</strong>：api 版本</li>
+<li><strong>kind</strong>：资源类型</li>
+<li><strong>metadata</strong>：元数据</li>
+<li><strong>spec</strong>：Spec 是让用户写入期望的状态，系统可以通过 Spec 读出用户的期望</li>
+<li><strong>status</strong>：Status 是系统写入观察到的状态，用户可以从中读出系统当前是什么状态</li>
+</ul>
+<h3 id="API-扩展方法"><a href="#API-扩展方法" class="headerlink" title="API 扩展方法"></a>API 扩展方法</h3><ul>
+<li>CRD：自定义 api</li>
+<li>aggregator：让用户利用全部的 Kubernetes API 实现自己的 apiserver，封装服务层</li>
+</ul>
+<h2 id="RC-RS-Deployment"><a href="#RC-RS-Deployment" class="headerlink" title="RC, RS, Deployment"></a>RC, RS, Deployment</h2><h3 id="RC"><a href="#RC" class="headerlink" title="RC"></a>RC</h3><p>推荐使用 RS + Deployment 来代替 RC<br>是比 pod 高一级的存在<br>RC 与 Pod 的关联是通过 Label 来实现的（通过 selector）<br>Label 是键值对，可用于筛选资源</p>
+<h3 id="RS"><a href="#RS" class="headerlink" title="RS"></a>RS</h3><p>大部分与 RC 相同，除了 <strong>rolling update</strong> （RS 特有）</p>
+<h3 id="Deployment"><a href="#Deployment" class="headerlink" title="Deployment"></a>Deployment</h3><p>比 RS 高一级的定义微服务应用的抽象层<br>Deployments 创建 RS</p>
+<h2 id="PV-PVC"><a href="#PV-PVC" class="headerlink" title="PV, PVC"></a>PV, PVC</h2><p>PV 与 PVC 一一对应<br>管理员定义 PV, 用户使用 PVC</p>
+
+    
+  </div>
+</article>
+
+</div>
+
+
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/category/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tag/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+  <section class="disqus-comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </section>
+
+  <script>
+    var disqus_shortname = 'fogdong';
+    
+    var disqus_url = 'http://yoursite.com/2018/12/25/Kubernetes 学习笔记/';
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+  <script id="dsq-count-scr" src="//fogdong.disqus.com/count.js" async></script>
+
+
+
+    
+
+
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
