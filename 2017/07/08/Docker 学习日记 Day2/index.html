@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Docker 学习日记 Day2 | FogDong&#39;s blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Docker," />
+  
+
+  <meta name="description" content="使用镜像Dockerfile 指令详解COPY：COPY &amp;lt;源路径&amp;gt;… &amp;lt;目标路径&amp;gt;COPY [“&amp;lt;源路径1&amp;gt;”,… “&amp;lt;目标路径&amp;gt;”] ADD：ADD 指令和 COPY 的格式和性质基本一致。但是在 COPY 基础上增加了一些功能。比如 &amp;lt;源路径&amp;gt; 可以是一个 URL，如果 &amp;lt;源路径&amp;gt; 为一个 tar 压缩文件的话，压缩格式">
+<meta name="keywords" content="Docker">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker 学习日记 Day2">
+<meta property="og:url" content="http://yoursite.com/2017/07/08/Docker 学习日记 Day2/index.html">
+<meta property="og:site_name" content="FogDong&#39;s blog">
+<meta property="og:description" content="使用镜像Dockerfile 指令详解COPY：COPY &amp;lt;源路径&amp;gt;… &amp;lt;目标路径&amp;gt;COPY [“&amp;lt;源路径1&amp;gt;”,… “&amp;lt;目标路径&amp;gt;”] ADD：ADD 指令和 COPY 的格式和性质基本一致。但是在 COPY 基础上增加了一些功能。比如 &amp;lt;源路径&amp;gt; 可以是一个 URL，如果 &amp;lt;源路径&amp;gt; 为一个 tar 压缩文件的话，压缩格式">
+<meta property="og:updated_time" content="2018-12-25T12:54:55.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Docker 学习日记 Day2">
+<meta name="twitter:description" content="使用镜像Dockerfile 指令详解COPY：COPY &amp;lt;源路径&amp;gt;… &amp;lt;目标路径&amp;gt;COPY [“&amp;lt;源路径1&amp;gt;”,… “&amp;lt;目标路径&amp;gt;”] ADD：ADD 指令和 COPY 的格式和性质基本一致。但是在 COPY 基础上增加了一些功能。比如 &amp;lt;源路径&amp;gt; 可以是一个 URL，如果 &amp;lt;源路径&amp;gt; 为一个 tar 压缩文件的话，压缩格式">
+
+  
+
+  
+    <link rel="icon" href="/images/crown.png">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?57e94d016e201fba3603a8a2b0263af0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+</head>
+<body>
+<canvas id="starlight"></canvas>
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/category/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tag/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">Posts List</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#使用镜像"><span class="toc-text">使用镜像</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Dockerfile-指令详解"><span class="toc-text">Dockerfile 指令详解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#其他制作镜像的方式"><span class="toc-text">其他制作镜像的方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#删除本地镜像"><span class="toc-text">删除本地镜像</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#操作容器"><span class="toc-text">操作容器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#启动"><span class="toc-text">启动</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#守护态运行"><span class="toc-text">守护态运行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#终止"><span class="toc-text">终止</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#进入容器"><span class="toc-text">进入容器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#导出和导入"><span class="toc-text">导出和导入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#删除容器"><span class="toc-text">删除容器</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#建立一个-mc-服务器镜像"><span class="toc-text">建立一个 mc 服务器镜像</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Kitematic-上的-Dockerfile"><span class="toc-text">Kitematic 上的 Dockerfile</span></a></li></ol></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-Docker 学习日记 Day2" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">Docker 学习日记 Day2</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2017.07.08</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>FogDong</span>
+        </span>
+      
+
+      
+  <span class="article-category">
+    <i class="icon-list"></i>
+    <a class="article-category-link" href="/categories/Docker/">Docker</a>
+  </span>
+
+
+
+      
+        <span>
+          <i class="icon-comment"></i>
+          <a href="https://fogdong.github.io//2017/07/08/Docker 学习日记 Day2/#disqus_thread"></a>
+        </span>
+      
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <h2 id="使用镜像"><a href="#使用镜像" class="headerlink" title="使用镜像"></a>使用镜像</h2><h3 id="Dockerfile-指令详解"><a href="#Dockerfile-指令详解" class="headerlink" title="Dockerfile 指令详解"></a>Dockerfile 指令详解</h3><p><code>COPY</code>：<br>COPY &lt;源路径&gt;… &lt;目标路径&gt;<br>COPY [“&lt;源路径1&gt;”,… “&lt;目标路径&gt;”]</p>
+<p><code>ADD</code>：ADD 指令和 COPY 的格式和性质基本一致。但是在 COPY 基础上增加了一些功能。比如 &lt;源路径&gt; 可以是一个 URL，如果 &lt;源路径&gt; 为一个 tar 压缩文件的话，压缩格式为 gzip, bzip2 以及 xz 的情况下，ADD 指令将会自动解压缩这个压缩文件到 &lt;目标路径&gt; 去</p>
+<blockquote>
+<p>遵循这样一个原则： 所有的文件复制均使用 COPY 指令，仅在需要自动解压缩的场合使用 ADD</p>
+</blockquote>
+<p><code>CMD</code>：<br>shell 格式：CMD &lt;命令&gt;<br>exec 格式：CMD [“可执行文件”, “参数1”, “参数2”…]<br>参数列表格式：CMD [“参数1”, “参数2”…]。在指定了 ENTRYPOINT 指令后，用 CMD 指定具体的参数</p>
+<blockquote>
+<p>在指令格式上，一般推荐使用 exec 格式，这类格式在解析时会被解析为 JSON 数组，因此一定要使用双引号 “，而不要使用单引号</p>
+</blockquote>
+<p><code>ENTRYPOINT</code>：ENTRYPOINT 的目的和 CMD 一样，都是在指定容器启动程序及参数。ENTRYPOINT 在运行时也可以替代，不过比 CMD 要略显繁琐，需要通过 docker run 的参数 –entrypoint 来指定。<br>当指定了 ENTRYPOINT 后，CMD 的含义就发生了改变，不再是直接的运行其命令，而是将 CMD 的内容作为参数传给 ENTRYPOINT 指令，换句话说实际执行时，将变为：<code>&lt; ENTRYPOINT &gt; “&lt; CMD &gt;”</code></p>
+<p><code>ENV</code>：<br>ENV &lt; key &gt; &lt; value &gt;<br>ENV &lt; key1 &gt;=&lt; value1 &gt; &lt; key2 &gt;=&lt; value2 &gt;…<br>这个指令很简单，就是设置环境变量而已，无论是后面的其它指令，如 RUN，还是运行时的应用，都可以直接使用这里定义的环境变量。可用<code>\</code>换行</p>
+<p><code>ARG</code>：ARG &lt;参数名&gt;[=&lt;默认值&gt;]<br>构建参数和 ENV 的效果一样，都是设置环境变量。所不同的是，ARG 所设置的构建环境的环境变量，在将来容器运行时是不会存在这些环境变量的</p>
+<p><code>VOLUME</code>：<br>VOLUME [“&lt;路径1&gt;”, “&lt;路径2&gt;”…]<br>VOLUME &lt;路径&gt;</p>
+<p><code>EXPOSE</code>：EXPOSE &lt;端口1&gt; [&lt;端口2&gt;…]</p>
+<blockquote>
+<p>EXPOSE 指令是声明运行时容器提供服务端口，这只是一个声明，在运行时并不会因为这个声明应用就会开启这个端口的服务。在 Dockerfile 中写入这样的声明有两个好处，一个是帮助镜像使用者理解这个镜像服务的守护端口，以方便配置映射；另一个用处则是在运行时使用随机端口映射时，也就是 docker run -P 时，会自动随机映射 EXPOSE 的端口<br>要将 EXPOSE 和在运行时使用 -p &lt;宿主端口&gt;:&lt;容器端口&gt; 区分开来。-p，是映射宿主端口和容器端口，换句话说，就是将容器的对应端口服务公开给外界访问，而 EXPOSE 仅仅是声明容器打算使用什么端口而已，并不会自动在宿主进行端口映射</p>
+</blockquote>
+<p><code>WORKDIR</code>：WORKDIR &lt;工作目录路径&gt;<br>使用 WORKDIR 指令可以来指定工作目录（或者称为当前目录），以后各层的当前目录就被改为指定的目录，如该目录不存在，WORKDIR 会帮你建立目录</p>
+<p><code>USER</code>：USER &lt;用户名&gt;<br>USER 指令和 WORKDIR 相似，都是改变环境状态并影响以后的层。WORKDIR 是改变工作目录，USER 则是改变之后层的执行 RUN, CMD 以及 ENTRYPOINT 这类命令的身份。当然，和 WORKDIR 一样，USER 只是帮助你切换到指定用户而已，这个用户必须是事先建立好的，否则无法切换</p>
+<p><code>HEALTHCHECK</code>：<br>HEALTHCHECK [选项] CMD &lt;命令&gt;：设置检查容器健康状况的命令<br>HEALTHCHECK NONE：如果基础镜像有健康检查指令，使用这行可以屏蔽掉其健康检查指令</p>
+<blockquote>
+<p>–interval=&lt;间隔&gt;：两次健康检查的间隔，默认为 30 秒；<br>–timeout=&lt;时长&gt;：健康检查命令运行超时时间，如果超过这个时间，本次健康检查就被视为失败，默认 30 秒；<br>–retries=&lt;次数&gt;：当连续失败指定次数后，则将容器状态视为 unhealthy，默认 3 次。</p>
+</blockquote>
+<p>为了帮助排障，健康检查命令的输出（包括 stdout 以及 stderr）都会被存储于健康状态里，可以用 <code>docker inspect</code> 来查看。</p>
+<p><code>ONBUILD</code>：ONBUILD &lt;其它指令&gt;<br>ONBUILD 是一个特殊的指令，它后面跟的是其它指令，比如 RUN, COPY 等，而这些指令，在当前镜像构建时并不会被执行。只有当以当前镜像为基础镜像，去构建下一级镜像的时候才会被执行</p>
+<h3 id="其他制作镜像的方式"><a href="#其他制作镜像的方式" class="headerlink" title="其他制作镜像的方式"></a>其他制作镜像的方式</h3><ol>
+<li>从 rootfs 压缩包导入<br><code>docker import [选项] &lt;文件&gt;|<url>|- [&lt;仓库名&gt;[:&lt;标签&gt;]]</url></code></li>
+<li><code>docker save</code></li>
+</ol>
+<h3 id="删除本地镜像"><a href="#删除本地镜像" class="headerlink" title="删除本地镜像"></a>删除本地镜像</h3><p><code>docker rmi [选项] &lt;镜像1&gt; [&lt;镜像2&gt; …]</code></p>
+<blockquote>
+<p>注意 <code>docker rm</code> 命令是删除容器，不要混淆</p>
+</blockquote>
+<h2 id="操作容器"><a href="#操作容器" class="headerlink" title="操作容器"></a>操作容器</h2><h3 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h3><ol>
+<li>第一种方式：基于镜像新建一个容器并启动<br><code>docker run</code></li>
+<li>第二种方式：将在终止状态（stopped）的容器重新启动<br><code>docker start</code></li>
+</ol>
+<h3 id="守护态运行"><a href="#守护态运行" class="headerlink" title="守护态运行"></a>守护态运行</h3><p><code>-d</code>使 Docker在后台运行而不是直接把执行命令的结果输出在当前宿主机下<br>要获取容器的输出信息，可以通过 <code>docker logs</code> 命令</p>
+<h3 id="终止"><a href="#终止" class="headerlink" title="终止"></a>终止</h3><p>可以使用 <code>docker stop</code> 来终止一个运行中的容器<br>此外，当Docker容器中指定的应用终结时，容器也自动终止</p>
+<h3 id="进入容器"><a href="#进入容器" class="headerlink" title="进入容器"></a>进入容器</h3><blockquote>
+<p>在使用 -d 参数时，容器启动后会进入后台。 某些时候需要进入容器进行操作，有很多种方法，包括使用 docker attach 命令或 nsenter 工具等。</p>
+</blockquote>
+<p><code>docker attach</code>： 使用 attach 命令有时候并不方便。当多个窗口同时 attach 到同一个容器的时候，所有窗口都会同步显示。当某个窗口因命令阻塞时,其他窗口也无法执行操作了<br><code>nsenter</code>：nsenter 启动一个新的shell进程(默认是/bin/bash), 同时会把这个新进程切换到和目标(target)进程相同的命名空间，这样就相当于进入了容器内部。<br>为了连接到容器，你还需要找到容器的第一个进程的 PID<br>可以<code>$ wget -P ~ <a href="https://github.com/yeasy/docker_practice/raw/master/_local/.bashrc_docker" target="_blank" rel="external">https://github.com/yeasy/docker_practice/raw/master/_local/.bashrc_docker</a>;<br>$ echo “[ -f ~/.bashrc_docker ] &amp;&amp; . ~/.bashrc_docker” &gt;&gt; ~/.bashrc; source ~/.bashrc</code>直接下载 .bashrc_docker，并将内容放到 .bashrc 中，就可以用<code>docker-pid</code> 可以获取某个容器的 PID；而 <code>docker-enter</code> 可以进入容器或直接在容器内执行命令。</p>
+<h3 id="导出和导入"><a href="#导出和导入" class="headerlink" title="导出和导入"></a>导出和导入</h3><p>导出容器：<code>docker export</code><br>导入容器：<br><code>docker import</code> 丢弃所有的历史记录和元数据信息（即仅保存容器当时的快照状态）<br><code>docker load</code> 保存所有状态</p>
+<h3 id="删除容器"><a href="#删除容器" class="headerlink" title="删除容器"></a>删除容器</h3><p><code>docker stop</code><br><code>docker rm</code></p>
+<hr>
+<h2 id="建立一个-mc-服务器镜像"><a href="#建立一个-mc-服务器镜像" class="headerlink" title="建立一个 mc 服务器镜像"></a>建立一个 mc 服务器镜像</h2><h3 id="Kitematic-上的-Dockerfile"><a href="#Kitematic-上的-Dockerfile" class="headerlink" title="Kitematic 上的 Dockerfile"></a>Kitematic 上的 Dockerfile</h3><ol>
+<li><code>FROM debian:wheezy</code> 指定基础镜像 debian，版本 wheezy</li>
+<li><code>RUN apt-get -y update<br>RUN apt-get -y install openjdk-7-jre-headless wget</code> 配置 jre 环境，因为 mc 是用 java 写的</li>
+<li><code>RUN wget -q <a href="https://s3.amazonaws.com/Minecraft.Download/versions/1.11.2/minecraft_server.1.11.2.jar" target="_blank" rel="external">https://s3.amazonaws.com/Minecraft.Download/versions/1.11.2/minecraft_server.1.11.2.jar</a></code> 下载 mc</li>
+<li><code>WORKDIR /data<br>VOLUME /data</code> 设置工作路径及数据卷路径</li>
+<li><code>EXPOSE 25565</code> 声明容器提供服务端口</li>
+<li><code>CMD echo eula=true &gt; /data/eula.txt &amp;&amp; java -jar /minecraft_server.1.11.2.jar</code> 设置 eula 为 true，即同意最终用户许可协议，并且启动服务器</li>
+</ol>
+
+    
+  </div>
+</article>
+
+</div>
+
+
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">Close</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/category/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tag/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+  <section class="disqus-comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </section>
+
+  <script>
+    var disqus_shortname = 'fogdong';
+    
+    var disqus_url = 'http://yoursite.com/2017/07/08/Docker 学习日记 Day2/';
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+  <script id="dsq-count-scr" src="//fogdong.disqus.com/count.js" async></script>
+
+
+
+    
+
+
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>

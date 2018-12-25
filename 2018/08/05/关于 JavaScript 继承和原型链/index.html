@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>关于 JavaScript 继承和原型链 | FogDong&#39;s blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="继承,原型链,JavaScript," />
+  
+
+  <meta name="description" content="Before we get started首先明确，JS 的继承是由原型链来实现的。（即使在ES6中 class 的 extends，也更像是一种语法糖）  当谈到继承时，JavaScript 只有一种结构：对象。每个实例对象（object）都有一个私有属性（称之为 __proto__ ）指向它的原型对象（prototype）。该原型对象也有一个自己的原型对象 ，层层向上直到一个对象的原型对象为">
+<meta name="keywords" content="继承,原型链,JavaScript">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于 JavaScript 继承和原型链">
+<meta property="og:url" content="http://yoursite.com/2018/08/05/关于 JavaScript 继承和原型链/index.html">
+<meta property="og:site_name" content="FogDong&#39;s blog">
+<meta property="og:description" content="Before we get started首先明确，JS 的继承是由原型链来实现的。（即使在ES6中 class 的 extends，也更像是一种语法糖）  当谈到继承时，JavaScript 只有一种结构：对象。每个实例对象（object）都有一个私有属性（称之为 __proto__ ）指向它的原型对象（prototype）。该原型对象也有一个自己的原型对象 ，层层向上直到一个对象的原型对象为">
+<meta property="og:updated_time" content="2018-12-25T12:45:07.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="关于 JavaScript 继承和原型链">
+<meta name="twitter:description" content="Before we get started首先明确，JS 的继承是由原型链来实现的。（即使在ES6中 class 的 extends，也更像是一种语法糖）  当谈到继承时，JavaScript 只有一种结构：对象。每个实例对象（object）都有一个私有属性（称之为 __proto__ ）指向它的原型对象（prototype）。该原型对象也有一个自己的原型对象 ，层层向上直到一个对象的原型对象为">
+
+  
+
+  
+    <link rel="icon" href="/images/crown.png">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?57e94d016e201fba3603a8a2b0263af0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+</head>
+<body>
+<canvas id="starlight"></canvas>
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/category/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tag/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">Posts List</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Before-we-get-started"><span class="toc-text">Before we get started</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#关于-proto-和-prototype"><span class="toc-text">关于 __proto__ 和 prototype</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JavaScript-实现继承的几种方式"><span class="toc-text">JavaScript 实现继承的几种方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#构造继承"><span class="toc-text">构造继承</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#原型继承"><span class="toc-text">原型继承</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实例继承"><span class="toc-text">实例继承</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#拷贝继承"><span class="toc-text">拷贝继承</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Call-继承"><span class="toc-text">Call 继承</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#中间件继承"><span class="toc-text">中间件继承</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Object-create"><span class="toc-text">Object.create()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ES6-的-extends"><span class="toc-text">ES6 的 extends</span></a></li></ol></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-关于 JavaScript 继承和原型链" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">关于 JavaScript 继承和原型链</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2018.08.05</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>FogDong</span>
+        </span>
+      
+
+      
+  <span class="article-category">
+    <i class="icon-list"></i>
+    <a class="article-category-link" href="/categories/JavaScript/">JavaScript</a>
+  </span>
+
+
+
+      
+        <span>
+          <i class="icon-comment"></i>
+          <a href="https://fogdong.github.io//2018/08/05/关于 JavaScript 继承和原型链/#disqus_thread"></a>
+        </span>
+      
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <h2 id="Before-we-get-started"><a href="#Before-we-get-started" class="headerlink" title="Before we get started"></a>Before we get started</h2><p>首先明确，JS 的继承是由原型链来实现的。（即使在ES6中 class 的 extends，也更像是一种语法糖）</p>
+<blockquote>
+<p>当谈到继承时，JavaScript 只有一种结构：对象。每个实例对象（object）都有一个私有属性（称之为 __proto__ ）指向它的原型对象（prototype）。该原型对象也有一个自己的原型对象 ，层层向上直到一个对象的原型对象为  null。根据定义，null 没有原型，并作为这个原型链中的最后一个环节。</p>
+</blockquote>
+<p>C++ 和 Java 使用 new 命令时，都会调用”类”的构造函数（constructor）<br>在 Javascript 语言中，new 命令后面跟的不是类，而是构造函数<br>在 JavaScript 中，构造器其实就是一个普通的函数。当使用 new 操作符 来作用这个函数时，它就可以被称为构造方法（构造函数）。</p>
+<p>那么new运算符具体干了什么呢？<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> obj  = &#123;&#125;;</div><div class="line">obj.__proto__ = F.prototype;</div><div class="line">F.call(obj);</div></pre></td></tr></table></figure></p>
+<p>即<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> o = <span class="keyword">new</span> Foo();</div><div class="line"></div><div class="line"><span class="comment">// JavaScript 实际上执行的是：</span></div><div class="line"><span class="keyword">var</span> o = <span class="keyword">new</span> <span class="built_in">Object</span>();</div><div class="line">o.__proto__ = Foo.prototype;</div><div class="line">Foo.call(o);</div></pre></td></tr></table></figure></p>
+<h2 id="关于-proto-和-prototype"><a href="#关于-proto-和-prototype" class="headerlink" title="关于 __proto__ 和 prototype"></a>关于 __proto__ 和 prototype</h2><p>那么上面的 __proto__ 和 prototype 又是什么呢？</p>
+<p>对象具有属性 __proto__，可称为隐式原型，一个对象的隐式原型指向构造该对象的构造函数的原型。<br>eg.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> o1 = <span class="keyword">new</span> <span class="built_in">Object</span>()</div><div class="line"><span class="comment">// 则</span></div><div class="line">o1.__proto__ ===  <span class="built_in">Object</span>.prototype <span class="comment">// true</span></div></pre></td></tr></table></figure></p>
+<p>而 Function 是特殊的对象，在 Function 中，除了和其他对象一样有 __proto__ 对象以外，还有原型属性（prototype），这个属性指向原型对象，而原型对象有个叫 constructor 的属性，指回原构造函数。<br>eg.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> f1 = <span class="keyword">new</span> Foo()</div><div class="line"><span class="comment">// 则</span></div><div class="line">f1.__proto__ === Foo.prototype</div><div class="line">Foo.__proto__ === <span class="built_in">Function</span>.prototype</div><div class="line"><span class="built_in">Function</span>.prototype.__proto__ === <span class="built_in">Object</span>.prototype</div><div class="line"><span class="built_in">Object</span>.prototype.__proto__ === <span class="literal">null</span></div><div class="line"></div><div class="line">Foo.prototype.constructor === Foo</div></pre></td></tr></table></figure></p>
+<p>Object 的原型对象用 Object.prototype.__proto__ = null 表示原型链的最顶端，如此变形成了 javascript 的原型链继承，同时也解释了为什么所有的 javascript 对象都具有 Object 的基本方法。</p>
+<blockquote>
+<p>Object 关于 prototype 的两个方法<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 等同于 B.__proto__= A</span></div><div class="line"><span class="built_in">Object</span>.setPrototypeOf(B, A)</div><div class="line"><span class="comment">// 从子类上获取父类</span></div><div class="line"><span class="built_in">Object</span>.getPrototypeOf(B)</div></pre></td></tr></table></figure></p>
+</blockquote>
+<h2 id="JavaScript-实现继承的几种方式"><a href="#JavaScript-实现继承的几种方式" class="headerlink" title="JavaScript 实现继承的几种方式"></a>JavaScript 实现继承的几种方式</h2><h3 id="构造继承"><a href="#构造继承" class="headerlink" title="构造继承"></a>构造继承</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">dog</span> (<span class="params">name</span>) </span>&#123;</div><div class="line">	<span class="keyword">this</span>.name = name</div><div class="line">&#125;</div><div class="line"><span class="comment">// 共享的属性放在 prototype 中，只要更改 prototype，所有实例的 master 属性都会被更改</span></div><div class="line">dog.prototype = &#123; <span class="attr">master</span>: <span class="string">'Fog'</span> &#125;</div><div class="line"></div><div class="line"><span class="comment">// 生成两个实例对象</span></div><div class="line"><span class="keyword">let</span> dog1 = <span class="keyword">new</span> dog(<span class="string">'111'</span>)</div><div class="line"><span class="keyword">let</span> dog2 = <span class="keyword">new</span> dog(<span class="string">'222'</span>)</div><div class="line"></div><div class="line"><span class="built_in">console</span>.log(dog1.master) <span class="comment">// Fog</span></div><div class="line"><span class="built_in">console</span>.log(dog2.master) <span class="comment">// Fog</span></div><div class="line"></div><div class="line"><span class="comment">// 更改master</span></div><div class="line">dog.prototype.master = <span class="string">'Misty'</span></div><div class="line"></div><div class="line"><span class="built_in">console</span>.log(dog1.master) <span class="comment">// Misty</span></div><div class="line"><span class="built_in">console</span>.log(dog2.master) <span class="comment">// Misty</span></div></pre></td></tr></table></figure>
+<p><strong>由于所有的实例对象共享同一个 prototype 对象，那么从外界看起来，prototype 对象就好像是实例对象的原型，而实例对象则好像”继承”了 prototype 对象一样。</strong></p>
+<h3 id="原型继承"><a href="#原型继承" class="headerlink" title="原型继承"></a>原型继承</h3><p>即：把父类的私有+公有的属性和方法，都作为子类公有的属性。<br>核心思想：<code>Child.prototype = new Parent()</code><br>实现的本质是重写了原型对象 ，通过将子类的原型指向了父类的实例，所以子类的实例就可以通过 __proto__ 访问到 Child.prototype 也就是 Parent 的实例</p>
+<h3 id="实例继承"><a href="#实例继承" class="headerlink" title="实例继承"></a>实例继承</h3><p>核心思想：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">Child</span>(<span class="params"></span>) </span>&#123;</div><div class="line">	<span class="keyword">let</span> instance = <span class="keyword">new</span> Parent()</div><div class="line">	<span class="keyword">return</span> instance</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="拷贝继承"><a href="#拷贝继承" class="headerlink" title="拷贝继承"></a>拷贝继承</h3><p>核心思想：循环遍历父类实例，然后父类实例的私有方法全部拿过来添加给子类实例</p>
+<h3 id="Call-继承"><a href="#Call-继承" class="headerlink" title="Call 继承"></a>Call 继承</h3><p>核心思想：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">Child</span>(<span class="params"></span>) </span>&#123;</div><div class="line">	Parent.call(<span class="keyword">this</span>); <span class="comment">//构造函数中的this就是当前实例</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>注意：call 是 function 的方法</p>
+<h3 id="中间件继承"><a href="#中间件继承" class="headerlink" title="中间件继承"></a>中间件继承</h3><p>核心思想：<code>Child.prototype.__proto__ = Parent.prototype</code></p>
+<h3 id="Object-create"><a href="#Object-create" class="headerlink" title="Object.create()"></a>Object.create()</h3><p>ECMAScript 5 中引入了一个新方法：Object.create()。可以调用这个方法来创建一个新对象。新对象的原型就是调用 create 方法时传入的第一个参数。</p>
+<h3 id="ES6-的-extends"><a href="#ES6-的-extends" class="headerlink" title="ES6 的 extends"></a>ES6 的 extends</h3><p>首先说明，ES6 的 Class 中，所有定义的 function 方法（注意：在定义类的方法时，前面不需要加上 function 这个保留字），都是定义在 prototype 属性上的。<br>即：在类的实例上调用方法，其实就是调用原型上的方法。<br>此外，在类的内部定义的所有方法都是不可枚举的。（与 ES5 不同，注意）</p>
+<p>Class 之间可以通过 <strong>extends</strong> 关键字实现继承。<br>子类必须在 constructor 方法中调用 super 方法，否则新建实例时会报错。这是因为子类没有自己的 this 对象，而是继承了父类的 this 对象。如果不调用 super 方法，子类就得不到 this 对象。<br>这与 ES5 不同：ES5 是先创建子类的 this，再将父类的方法添加到 this 上（Parent.apply(this)）<br>而 ES6：先创建父类的 this，然后再用子类的构造函数修改 this</p>
+<p>而 super 指向父类的原型对象，所以定义在父类实例上的方法或属性，是无法通过 super 调用的</p>
+
+    
+  </div>
+</article>
+
+</div>
+
+
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">Close</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/category/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tag/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+  <section class="disqus-comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </section>
+
+  <script>
+    var disqus_shortname = 'fogdong';
+    
+    var disqus_url = 'http://yoursite.com/2018/08/05/关于 JavaScript 继承和原型链/';
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+  <script id="dsq-count-scr" src="//fogdong.disqus.com/count.js" async></script>
+
+
+
+    
+
+
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>

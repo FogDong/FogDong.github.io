@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Docker 学习日记 Day3 | FogDong&#39;s blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Docker," />
+  
+
+  <meta name="description" content="docker-spigotDockerfile： FROM nimmis/java:openjdk-8-jdk：指定基础镜像，配置 java 环境 ENV SPIGOT_HOME=/minecraft \：SPIGOT-server 的默认目录SPIGOT_VER=latest \：默认版本为最新SPIGOT_AUTORESTART=yes：结合 readme 里写的，应该是如果 mc 内部的 s">
+<meta name="keywords" content="Docker">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker 学习日记 Day3">
+<meta property="og:url" content="http://yoursite.com/2017/07/09/Docker 学习日记 Day3/index.html">
+<meta property="og:site_name" content="FogDong&#39;s blog">
+<meta property="og:description" content="docker-spigotDockerfile： FROM nimmis/java:openjdk-8-jdk：指定基础镜像，配置 java 环境 ENV SPIGOT_HOME=/minecraft \：SPIGOT-server 的默认目录SPIGOT_VER=latest \：默认版本为最新SPIGOT_AUTORESTART=yes：结合 readme 里写的，应该是如果 mc 内部的 s">
+<meta property="og:updated_time" content="2018-12-25T12:56:14.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Docker 学习日记 Day3">
+<meta name="twitter:description" content="docker-spigotDockerfile： FROM nimmis/java:openjdk-8-jdk：指定基础镜像，配置 java 环境 ENV SPIGOT_HOME=/minecraft \：SPIGOT-server 的默认目录SPIGOT_VER=latest \：默认版本为最新SPIGOT_AUTORESTART=yes：结合 readme 里写的，应该是如果 mc 内部的 s">
+
+  
+
+  
+    <link rel="icon" href="/images/crown.png">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?57e94d016e201fba3603a8a2b0263af0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+</head>
+<body>
+<canvas id="starlight"></canvas>
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/category/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tag/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">Posts List</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#docker-spigot"><span class="toc-text">docker-spigot</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Dockerfile："><span class="toc-text">Dockerfile：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#docker-run"><span class="toc-text">docker run</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#访问仓库"><span class="toc-text">访问仓库</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Docker-Hub"><span class="toc-text">Docker Hub</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#私有仓库"><span class="toc-text">私有仓库</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数据管理"><span class="toc-text">数据管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#数据卷"><span class="toc-text">数据卷</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数据卷容器"><span class="toc-text">数据卷容器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#备份、恢复、迁移数据卷"><span class="toc-text">备份、恢复、迁移数据卷</span></a></li></ol></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-Docker 学习日记 Day3" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">Docker 学习日记 Day3</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2017.07.09</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>FogDong</span>
+        </span>
+      
+
+      
+  <span class="article-category">
+    <i class="icon-list"></i>
+    <a class="article-category-link" href="/categories/Docker/">Docker</a>
+  </span>
+
+
+
+      
+        <span>
+          <i class="icon-comment"></i>
+          <a href="https://fogdong.github.io//2017/07/09/Docker 学习日记 Day3/#disqus_thread"></a>
+        </span>
+      
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <h2 id="docker-spigot"><a href="#docker-spigot" class="headerlink" title="docker-spigot"></a><a href="https://github.com/nimmis/docker-spigot" target="_blank" rel="external">docker-spigot</a></h2><h3 id="Dockerfile："><a href="#Dockerfile：" class="headerlink" title="Dockerfile："></a>Dockerfile：</h3><ol>
+<li><code>FROM nimmis/java:openjdk-8-jdk</code>：指定基础镜像，配置 java 环境</li>
+<li><code>ENV SPIGOT_HOME=/minecraft \</code>：SPIGOT-server 的默认目录<br><code>SPIGOT_VER=latest \</code>：默认版本为最新<br><code>SPIGOT_AUTORESTART=yes</code>：结合 readme 里写的，应该是如果 mc 内部的 stop 出了问题，就重新启动</li>
+<li><code>COPY rootfs /</code>：复制额外需要的文件<blockquote>
+<p>rootf 中：<br>waitjava.sh 处理 mc 错误的 stop 命令，在 supervisor/conf.d 里调用了 waitjava.sh<br>在 usr/local/bin 中指定了常用简便指令，eg：<code>mc_stop</code></p>
+<ul>
+<li><code>mc_log</code>：<code>/etc/init.d/minecraft_server log</code><br>查阅 /etc/init.d/minecraft_server 可发现：<br><code>log)<br>echo “Abort with CTRL-C”<br>tail -f $MC_DIR/output.con</code><br>即输出日志</li>
+<li><code>mc_restart</code>：<code>supervisorctl restart spigot</code><br>supervisor 主要由两部分组成：<br>1.supervisord (server 部分)：主要负责管理子进程，响应客户端命令以及日志的输出等；<br>2.supervisorctl (client 部分)：命令行客户端，用户可以通过它与不同的 supervisord 进程联系，获取子进程的状态等。</li>
+<li><code>mc_send</code>：<code>echo “/etc/init.d/minecraft_server send \”$1\””<br>/etc/init.d/minecraft_server send “$1 $2 $3 $4 $5”<br>mc_log</code></li>
+</ul>
+</blockquote>
+</li>
+</ol>
+<ol>
+<li><code>RUN apt-get update &amp;&amp; \</code><br><code> apt-get -y dist-upgrade &amp;&amp; \</code><br><code>printf “Build of nimmis/spigot:latest, date: %s\n”  <code>date -u +&quot;%Y-%m-%dT%H:%M:%SZ&quot;</code>  &gt; /etc/BUILDS/spigot &amp;&amp; \</code>：更新，并且更新一次就写一个更新文件，里面写明了更新的时间<br><code>apt-get install -y wget git &amp;&amp; \</code>：下载<br><code> /usr/sbin/useradd -s /bin/bash -d /minecraft -m minecraft &amp;&amp; \</code>：为 mc 创建特别用户<br><code>apt-get clean all</code>：清理镜像中的缓存</li>
+<li><code>EXPOSE 25565</code>：声明容器提供服务端口</li>
+</ol>
+<h3 id="docker-run"><a href="#docker-run" class="headerlink" title="docker run"></a>docker run</h3><p><code>docker run -d -p 25565:25565 -e EULA=true nimmis/spigot</code>：指定端口，并同意最终用户协议</p>
+<hr>
+<h2 id="访问仓库"><a href="#访问仓库" class="headerlink" title="访问仓库"></a>访问仓库</h2><blockquote>
+<p> 仓库（Repository）是集中存放镜像的地方。一个容易混淆的概念是注册服务器（Registry）。实际上注册服务器是管理仓库的具体服务器，每个服务器上可以有多个仓库，而每个仓库下面有多个镜像。从这方面来说，仓库可以被认为是一个具体的项目或目录。例如对于仓库地址 dl.dockerpool.com/ubuntu 来说，dl.dockerpool.com 是注册服务器地址，ubuntu 是仓库名</p>
+</blockquote>
+<h3 id="Docker-Hub"><a href="#Docker-Hub" class="headerlink" title="Docker Hub"></a>Docker Hub</h3><p><code>docker search</code><br><code>docker pull</code><br><code>docker push</code></p>
+<h3 id="私有仓库"><a href="#私有仓库" class="headerlink" title="私有仓库"></a>私有仓库</h3><p><code>docker-registry</code>工具<br>安装：<code>sudo pip3 install docker-registry</code></p>
+<h2 id="数据管理"><a href="#数据管理" class="headerlink" title="数据管理"></a>数据管理</h2><h3 id="数据卷"><a href="#数据卷" class="headerlink" title="数据卷"></a>数据卷</h3><blockquote>
+<p>数据卷是一个可供一个或多个容器使用的特殊目录，它绕过 UFS，可以提供很多有用的特性：</p>
+<ul>
+<li>数据卷可以在容器之间共享和重用</li>
+<li>对数据卷的修改会立马生效</li>
+<li>对数据卷的更新，不会影响镜像</li>
+<li>数据卷默认会一直存在，即使容器被删除</li>
+</ul>
+</blockquote>
+<p><strong>在用 <code>docker run</code> 命令的时候，使用 -v 标记来创建一个数据卷并挂载到容器里。在一次 run 中多次使用可以挂载多个数据卷。</strong></p>
+<blockquote>
+<p>也可以在 Dockerfile 中使用 VOLUME 来添加一个或者多个新的卷到由该镜像创建的任意容器</p>
+</blockquote>
+<p>删除数据卷：可以在删除容器的时候使用 docker rm -v 这个命令</p>
+<blockquote>
+<p>使用 -v 标记也可以指定挂载一个本地主机的目录到容器中去。本地目录的路径必须是绝对路径，如果目录不存在 Docker 会自动为你创建它。Dockerfile 中不支持这种用法</p>
+</blockquote>
+<h3 id="数据卷容器"><a href="#数据卷容器" class="headerlink" title="数据卷容器"></a>数据卷容器</h3><blockquote>
+<p>如果你有一些持续更新的数据需要在容器之间共享，最好创建数据卷容器<br>数据卷容器，其实就是一个正常的容器，专门用来提供数据卷供其它容器挂载的</p>
+</blockquote>
+<ol>
+<li>创建一个名为 dbdata 的数据卷容器<br><code>sudo docker run -d -v /dbdata –name dbdata training/postgres echo Data-only container for postgres</code></li>
+<li>在其他容器中使用 <code>–volumes-from</code> 来挂载 dbdata 容器中的数据卷<br><code>sudo docker run -d –volumes-from dbdata –name db1 training/postgres<br>sudo docker run -d –volumes-from dbdata –name db2 training/postgres</code></li>
+</ol>
+<blockquote>
+<p>使用 –volumes-from 参数所挂载数据卷的容器自己并不需要保持在运行状态</p>
+</blockquote>
+<h3 id="备份、恢复、迁移数据卷"><a href="#备份、恢复、迁移数据卷" class="headerlink" title="备份、恢复、迁移数据卷"></a>备份、恢复、迁移数据卷</h3>
+    
+  </div>
+</article>
+
+</div>
+
+
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">Close</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/category/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tag/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+  <section class="disqus-comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </section>
+
+  <script>
+    var disqus_shortname = 'fogdong';
+    
+    var disqus_url = 'http://yoursite.com/2017/07/09/Docker 学习日记 Day3/';
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+  <script id="dsq-count-scr" src="//fogdong.disqus.com/count.js" async></script>
+
+
+
+    
+
+
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>

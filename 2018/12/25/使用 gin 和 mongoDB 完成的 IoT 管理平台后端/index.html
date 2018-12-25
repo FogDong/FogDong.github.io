@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>使用 gin 和 mongoDB 完成的 IoT 管理平台后端 | FogDong&#39;s blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="后端,Golang," />
+  
+
+  <meta name="description" content="项目结构123456├── db├── middleware├── models└── pkg    ├── api    └── handler dbdb 中主要存放数据库的连接逻辑1234567891011121314151617181920212223242526272829303132var (	// Session stores mongo session	Session *mgo.Se">
+<meta name="keywords" content="后端,Golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 gin 和 mongoDB 完成的 IoT 管理平台后端">
+<meta property="og:url" content="http://yoursite.com/2018/12/25/使用 gin 和 mongoDB 完成的 IoT 管理平台后端/index.html">
+<meta property="og:site_name" content="FogDong&#39;s blog">
+<meta property="og:description" content="项目结构123456├── db├── middleware├── models└── pkg    ├── api    └── handler dbdb 中主要存放数据库的连接逻辑1234567891011121314151617181920212223242526272829303132var (	// Session stores mongo session	Session *mgo.Se">
+<meta property="og:updated_time" content="2018-12-25T12:40:31.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用 gin 和 mongoDB 完成的 IoT 管理平台后端">
+<meta name="twitter:description" content="项目结构123456├── db├── middleware├── models└── pkg    ├── api    └── handler dbdb 中主要存放数据库的连接逻辑1234567891011121314151617181920212223242526272829303132var (	// Session stores mongo session	Session *mgo.Se">
+
+  
+
+  
+    <link rel="icon" href="/images/crown.png">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?57e94d016e201fba3603a8a2b0263af0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+</head>
+<body>
+<canvas id="starlight"></canvas>
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/category/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tag/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">Posts List</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#项目结构"><span class="toc-text">项目结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#db"><span class="toc-text">db</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#middleware"><span class="toc-text">middleware</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#cors"><span class="toc-text">cors</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#dbConnector"><span class="toc-text">dbConnector</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#jwt"><span class="toc-text">jwt</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#models"><span class="toc-text">models</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#api"><span class="toc-text">api</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#handler"><span class="toc-text">handler</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#部署"><span class="toc-text">部署</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#源码"><span class="toc-text">源码</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-使用 gin 和 mongoDB 完成的 IoT 管理平台后端" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">使用 gin 和 mongoDB 完成的 IoT 管理平台后端</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2018.12.25</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>FogDong</span>
+        </span>
+      
+
+      
+  <span class="article-category">
+    <i class="icon-list"></i>
+    <a class="article-category-link" href="/categories/后端/">后端</a>
+  </span>
+
+
+
+      
+        <span>
+          <i class="icon-comment"></i>
+          <a href="https://fogdong.github.io//2018/12/25/使用 gin 和 mongoDB 完成的 IoT 管理平台后端/#disqus_thread"></a>
+        </span>
+      
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <h2 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">├── db</div><div class="line">├── middleware</div><div class="line">├── models</div><div class="line">└── pkg</div><div class="line">    ├── api</div><div class="line">    └── handler</div></pre></td></tr></table></figure>
+<h2 id="db"><a href="#db" class="headerlink" title="db"></a>db</h2><p>db 中主要存放数据库的连接逻辑<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> (</div><div class="line">	<span class="comment">// Session stores mongo session</span></div><div class="line">	Session *mgo.Session</div><div class="line"></div><div class="line">	<span class="comment">// Mongo stores the mongodb connection string information</span></div><div class="line">	Mongo *mgo.DialInfo</div><div class="line">)</div><div class="line"></div><div class="line"><span class="keyword">const</span> (</div><div class="line">	<span class="comment">// MongoDBUrl is the default mongodb url that will be used to connect to the database.</span></div><div class="line">	MongoDBUrl = <span class="string">"mongodb://localhost:27017/IoT-admin"</span></div><div class="line">)</div><div class="line"></div><div class="line"><span class="comment">// Connect connects to mongodb</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">Connect</span><span class="params">()</span></span> &#123;</div><div class="line">	uri := os.Getenv(<span class="string">"MONGODB_URL"</span>)</div><div class="line"></div><div class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(uri) == <span class="number">0</span> &#123;</div><div class="line">		uri = MongoDBUrl</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	mongo, err := mgo.ParseURL(uri)</div><div class="line">	s, err := mgo.Dial(uri)</div><div class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</div><div class="line">		fmt.Printf(<span class="string">"Can't connect to mongo, go error %v\n"</span>, err)</div><div class="line">		<span class="built_in">panic</span>(err.Error())</div><div class="line">	&#125;</div><div class="line">	s.SetSafe(&amp;mgo.Safe&#123;&#125;)</div><div class="line">	fmt.Println(<span class="string">"Connected to"</span>, uri)</div><div class="line">	Session = s</div><div class="line">	Mongo = mongo</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="middleware"><a href="#middleware" class="headerlink" title="middleware"></a>middleware</h2><p>middleware 中主要存放中间件。</p>
+<h3 id="cors"><a href="#cors" class="headerlink" title="cors"></a>cors</h3><p>处理跨域问题<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">Cors</span><span class="params">()</span> <span class="title">gin</span>.<span class="title">HandlerFunc</span></span> &#123;</div><div class="line">	<span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(c *gin.Context)</span></span> &#123;</div><div class="line">		method := c.Request.Method</div><div class="line">		c.Header(<span class="string">"Access-Control-Allow-Origin"</span>, <span class="string">"*"</span>)</div><div class="line">		c.Header(<span class="string">"Access-Control-Allow-Headers"</span>, <span class="string">"Content-Type,AccessToken,X-CSRF-Token, Authorization, Token"</span>)</div><div class="line">		c.Header(<span class="string">"Access-Control-Allow-Methods"</span>, <span class="string">"POST, GET, OPTIONS, PUT, PATCH, DELETE"</span>)</div><div class="line">		c.Header(<span class="string">"Access-Control-Expose-Headers"</span>, <span class="string">"Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Content-Type"</span>)</div><div class="line">		c.Header(<span class="string">"Access-Control-Allow-Credentials"</span>, <span class="string">"true"</span>)</div><div class="line"></div><div class="line">		<span class="comment">// 放行所有OPTIONS方法，因为有的模板是要请求两次的</span></div><div class="line">		<span class="keyword">if</span> method == <span class="string">"OPTIONS"</span> &#123;</div><div class="line">			c.AbortWithStatus(http.StatusNoContent)</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		<span class="comment">// 处理请求</span></div><div class="line">		c.Next()</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="dbConnector"><a href="#dbConnector" class="headerlink" title="dbConnector"></a>dbConnector</h3><p>数据库连接中间件：克隆每一个数据库会话，并且确保 <code>db</code> 属性在每一个 handler 里均有效<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">Connect</span><span class="params">(context *gin.Context)</span></span> &#123;</div><div class="line">	s := db.Session.Clone()</div><div class="line">	<span class="keyword">defer</span> s.Clone()</div><div class="line"></div><div class="line">	context.Set(<span class="string">"db"</span>, s.DB(db.Mongo.Database))</div><div class="line">	context.Next()</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="jwt"><a href="#jwt" class="headerlink" title="jwt"></a>jwt</h3><p> JWTAuth 中间件，检查token<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">JWTAuth</span><span class="params">()</span> <span class="title">gin</span>.<span class="title">HandlerFunc</span></span> &#123;</div><div class="line">	<span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(c *gin.Context)</span></span> &#123;</div><div class="line">		token := c.Request.Header.Get(<span class="string">"Authorization"</span>)</div><div class="line">		<span class="keyword">if</span> token == <span class="string">""</span> &#123;</div><div class="line">			c.JSON(http.StatusOK, gin.H&#123;</div><div class="line">				<span class="string">"status"</span>: <span class="number">-1</span>,</div><div class="line">				<span class="string">"msg"</span>:    <span class="string">"请求未携带token，无权限访问"</span>,</div><div class="line">			&#125;)</div><div class="line">			c.Abort()</div><div class="line">			<span class="keyword">return</span></div><div class="line">		&#125;</div><div class="line"></div><div class="line">		log.Print(<span class="string">"get token: "</span>, token)</div><div class="line"></div><div class="line">		j := NewJWT()</div><div class="line">		<span class="comment">// parseToken 解析token包含的信息</span></div><div class="line">		claims, err := j.ParseToken(token)</div><div class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</div><div class="line">			<span class="keyword">if</span> err == TokenExpired &#123;</div><div class="line">				c.JSON(http.StatusOK, gin.H&#123;</div><div class="line">					<span class="string">"status"</span>: <span class="number">-1</span>,</div><div class="line">					<span class="string">"msg"</span>:    <span class="string">"授权已过期"</span>,</div><div class="line">				&#125;)</div><div class="line">				c.Abort()</div><div class="line">				<span class="keyword">return</span></div><div class="line">			&#125;</div><div class="line">			c.JSON(http.StatusOK, gin.H&#123;</div><div class="line">				<span class="string">"status"</span>: <span class="number">-1</span>,</div><div class="line">				<span class="string">"msg"</span>:    err.Error(),</div><div class="line">			&#125;)</div><div class="line">			c.Abort()</div><div class="line">			<span class="keyword">return</span></div><div class="line">		&#125;</div><div class="line">		<span class="comment">// 继续交由下一个路由处理,并将解析出的信息传递下去</span></div><div class="line">		c.Set(<span class="string">"claims"</span>, claims)</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="models"><a href="#models" class="headerlink" title="models"></a>models</h2><p>主要存放数据结构体<br>其中注意一点，在定义 <code>ID</code> 时，即会在 MongoDB 中自动生成的 <code>_id</code> ，必须加上 omitempty ，忽略该字段，否则在创建时此字段为空会报错<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ID               bson.ObjectId   <span class="string">`json:"_id,omitempty" bson:"_id,omitempty"`</span></div></pre></td></tr></table></figure></p>
+<h2 id="api"><a href="#api" class="headerlink" title="api"></a>api</h2><p>主要存放路由<br>统一 api prefix <code>/api/v1alpha1/</code><br>在部分路由前加上中间件 <code>v1.Use(middleware.JWTAuth())</code><br>路由遵循 RESTful 规范</p>
+<h2 id="handler"><a href="#handler" class="headerlink" title="handler"></a>handler</h2><p> 主要存放业务逻辑</p>
+<p>如：</p>
+<p>GET<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Get a product</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">GetProduct</span><span class="params">(c *gin.Context)</span></span> &#123;</div><div class="line">	db := c.MustGet(<span class="string">"db"</span>).(*mgo.Database)</div><div class="line">	<span class="keyword">var</span> product models.Product</div><div class="line"></div><div class="line">	err := db.C(models.CollectionProduct).</div><div class="line">		FindId(bson.ObjectIdHex(c.Param(<span class="string">"_id"</span>))).</div><div class="line">		One(&amp;product)</div><div class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</div><div class="line">		c.JSON(http.StatusInternalServerError, gin.H&#123;</div><div class="line">			<span class="string">"status"</span>: <span class="number">500</span>,</div><div class="line">			<span class="string">"msg"</span>:    err.Error(),</div><div class="line">		&#125;)</div><div class="line">		<span class="keyword">return</span></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	c.JSON(http.StatusOK, gin.H&#123;</div><div class="line">		<span class="string">"status"</span>: <span class="number">200</span>,</div><div class="line">		<span class="string">"msg"</span>:    <span class="string">"Success"</span>,</div><div class="line">		<span class="string">"data"</span>:   product,</div><div class="line">	&#125;)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>CREATE<br>首先从 token 中解析出用户的 id, 从而加到 product 的 CreatedBy 字段中<br>并且每新增一个 product 都往 customer 和 organization 中的 productCount 字段加一，且把 productId 加到这两张表的 productId 数组中<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Create a product</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">CreateProduct</span><span class="params">(c *gin.Context)</span></span> &#123;</div><div class="line">	db := c.MustGet(<span class="string">"db"</span>).(*mgo.Database)</div><div class="line"></div><div class="line">	<span class="keyword">var</span> product models.Product</div><div class="line">	err := c.BindJSON(&amp;product)</div><div class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</div><div class="line">		c.JSON(http.StatusInternalServerError, gin.H&#123;</div><div class="line">			<span class="string">"status"</span>: <span class="number">500</span>,</div><div class="line">			<span class="string">"msg"</span>:    err.Error(),</div><div class="line">		&#125;)</div><div class="line">		<span class="keyword">return</span></div><div class="line">	&#125;</div><div class="line">	claims := c.MustGet(<span class="string">"claims"</span>).(*middleware.CustomClaims)</div><div class="line">	product.CreatedBy = claims.ID</div><div class="line">	product.ID = bson.NewObjectId()</div><div class="line"></div><div class="line">	err = db.C(models.CollectionProduct).Insert(product)</div><div class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</div><div class="line">		c.JSON(http.StatusInternalServerError, gin.H&#123;</div><div class="line">			<span class="string">"status"</span>: <span class="number">500</span>,</div><div class="line">			<span class="string">"msg"</span>:    err.Error(),</div><div class="line">		&#125;)</div><div class="line">		<span class="keyword">return</span></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	err = db.C(models.CollectionUser).Update(bson.M&#123;<span class="string">"_id"</span>: product.CreatedBy&#125;,</div><div class="line">		bson.M&#123;<span class="string">"$inc"</span>: bson.M&#123;<span class="string">"productCount"</span>: <span class="number">1</span>&#125;&#125;)</div><div class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</div><div class="line">		c.JSON(http.StatusInternalServerError, gin.H&#123;</div><div class="line">			<span class="string">"status"</span>: <span class="number">500</span>,</div><div class="line">			<span class="string">"msg"</span>:    err.Error(),</div><div class="line">		&#125;)</div><div class="line">		<span class="keyword">return</span></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">for</span> _, id := <span class="keyword">range</span> product.CustomerID &#123;</div><div class="line">		err = db.C(models.CollectionCustomer).Update(bson.M&#123;<span class="string">"_id"</span>: id&#125;,</div><div class="line">			bson.M&#123;<span class="string">"$inc"</span>: bson.M&#123;<span class="string">"productCount"</span>: <span class="number">1</span>&#125;&#125;)</div><div class="line">		err = db.C(models.CollectionCustomer).Update(bson.M&#123;<span class="string">"_id"</span>: id&#125;,</div><div class="line">			bson.M&#123;<span class="string">"$push"</span>: bson.M&#123;<span class="string">"productId"</span>: product.ID&#125;&#125;)</div><div class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</div><div class="line">			c.JSON(http.StatusInternalServerError, gin.H&#123;</div><div class="line">				<span class="string">"status"</span>: <span class="number">500</span>,</div><div class="line">				<span class="string">"msg"</span>:    err.Error(),</div><div class="line">			&#125;)</div><div class="line">			<span class="keyword">return</span></div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	err = db.C(models.CollectionOrg).Update(bson.M&#123;<span class="string">"_id"</span>: product.OrganizationID&#125;,</div><div class="line">		bson.M&#123;<span class="string">"$inc"</span>: bson.M&#123;<span class="string">"productCount"</span>: <span class="number">1</span>&#125;&#125;)</div><div class="line">	err = db.C(models.CollectionOrg).Update(bson.M&#123;<span class="string">"_id"</span>: product.OrganizationID&#125;,</div><div class="line">		bson.M&#123;<span class="string">"$push"</span>: bson.M&#123;<span class="string">"productId"</span>: product.ID&#125;&#125;)</div><div class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</div><div class="line">		c.JSON(http.StatusInternalServerError, gin.H&#123;</div><div class="line">			<span class="string">"status"</span>: <span class="number">500</span>,</div><div class="line">			<span class="string">"msg"</span>:    err.Error(),</div><div class="line">		&#125;)</div><div class="line">		<span class="keyword">return</span></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	c.JSON(http.StatusOK, gin.H&#123;</div><div class="line">		<span class="string">"status"</span>: <span class="number">200</span>,</div><div class="line">		<span class="string">"msg"</span>:    <span class="string">"Success"</span>,</div><div class="line">	&#125;)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>PUT<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">UpdateProduct</span><span class="params">(c *gin.Context)</span></span> &#123;</div><div class="line">	db := c.MustGet(<span class="string">"db"</span>).(*mgo.Database)</div><div class="line"></div><div class="line">	<span class="keyword">var</span> product models.Product</div><div class="line">	err := c.BindJSON(&amp;product)</div><div class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</div><div class="line">		c.JSON(http.StatusInternalServerError, gin.H&#123;</div><div class="line">			<span class="string">"status"</span>: <span class="number">500</span>,</div><div class="line">			<span class="string">"msg"</span>:    err.Error(),</div><div class="line">		&#125;)</div><div class="line">		<span class="keyword">return</span></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// 查找原来的文档</span></div><div class="line">	query := bson.M&#123;</div><div class="line">		<span class="string">"_id"</span>: bson.ObjectIdHex(c.Param(<span class="string">"_id"</span>)),</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// 更新</span></div><div class="line">	err = db.C(models.CollectionProduct).Update(query, product)</div><div class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</div><div class="line">		c.JSON(http.StatusInternalServerError, gin.H&#123;</div><div class="line">			<span class="string">"status"</span>: <span class="number">500</span>,</div><div class="line">			<span class="string">"msg"</span>:    err.Error(),</div><div class="line">		&#125;)</div><div class="line">		<span class="keyword">return</span></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	c.JSON(http.StatusOK, gin.H&#123;</div><div class="line">		<span class="string">"status"</span>: <span class="number">200</span>,</div><div class="line">		<span class="string">"msg"</span>:    <span class="string">"Success"</span>,</div><div class="line">		<span class="string">"data"</span>:   product,</div><div class="line">	&#125;)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p>使用 docker 打包整个后端<br>Dockerfile:（注意：需要设置时区）<br><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#源镜像</span></div><div class="line"><span class="keyword">FROM</span> golang:latest</div><div class="line"><span class="keyword">ENV</span> TZ=Asia/Shanghai</div><div class="line"><span class="keyword">RUN</span> ln -snf /usr/share/zoneinfo/$TZ /etc/localtime &amp;&amp; echo $TZ &gt; /etc/timezone</div><div class="line"><span class="keyword">WORKDIR</span> $GOPATH/src/IoT-admin-backend</div><div class="line"><span class="keyword">COPY</span> . $GOPATH/src/IoT-admin-backend</div><div class="line"><span class="keyword">RUN</span> go build .</div><div class="line"><span class="comment">#暴露端口</span></div><div class="line"><span class="keyword">EXPOSE</span> <span class="number">9002</span></div><div class="line"><span class="comment">#最终运行docker的命令</span></div><div class="line"><span class="keyword">ENTRYPOINT</span>  ["./IoT-admin-backend"]</div></pre></td></tr></table></figure></p>
+<p>除了 IoT-admin 以外，还需要 mongo , 直接使用 dockerhub 上的最新 mongo 镜像跑一个 mongo container 之后，使用 docker-compose 跑两个容器<br>docker-compose: （version 是 2.0 是因为服务器上的 docker 版本较低）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">version: &apos;2.0&apos;</div><div class="line">services:</div><div class="line">  api:</div><div class="line">    container_name: &apos;IoT-admin&apos;</div><div class="line">    build: &apos;.&apos;</div><div class="line">    ports:</div><div class="line">      - &apos;9002:9002&apos;</div><div class="line">    volumes:</div><div class="line">      - &apos;.:/go/src/IoT-admin&apos;</div><div class="line">    links:</div><div class="line">      - mongo</div><div class="line">    environment:</div><div class="line">      MONGODB_URL: mongodb://mongo:27017/IoT-admin</div><div class="line">  mongo:</div><div class="line">    image: &apos;mongo:latest&apos;</div><div class="line">    container_name: &apos;mongo&apos;</div><div class="line">    ports:</div><div class="line">      - &apos;27010:27017&apos;</div></pre></td></tr></table></figure></p>
+<h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><p>见 GitHub：<a href="https://github.com/FogDong/IoT-admin-backend" target="_blank" rel="external">https://github.com/FogDong/IoT-admin-backend</a></p>
+
+    
+  </div>
+</article>
+
+</div>
+
+
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">Close</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/category/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tag/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+  <section class="disqus-comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </section>
+
+  <script>
+    var disqus_shortname = 'fogdong';
+    
+    var disqus_url = 'http://yoursite.com/2018/12/25/使用 gin 和 mongoDB 完成的 IoT 管理平台后端/';
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+  <script id="dsq-count-scr" src="//fogdong.disqus.com/count.js" async></script>
+
+
+
+    
+
+
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>

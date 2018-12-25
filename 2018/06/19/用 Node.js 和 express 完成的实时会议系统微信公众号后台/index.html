@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>用 Node.js 和 express 完成的实时会议系统微信公众号后台 | FogDong&#39;s blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="NodeJS,后端,express," />
+  
+
+  <meta name="description" content="之前和小伙伴完成的一个公众号，记录一下大概的开发过程吧 微信授权部分我们用的是企业微信号，因为当时企业微信的官方文档更新不够及时，有部分 api 的请求参数是错误的，所以耽误了不少时间。 第一步请求微信的api首先需要拿到一个 accessToken，而这个 token 是通过 corpid 和 corpsecret 来拿到的  corpid：每个企业都拥有唯一的 corpid，获取此信息可在管理">
+<meta name="keywords" content="NodeJS,后端,express">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用 Node.js 和 express 完成的实时会议系统微信公众号后台">
+<meta property="og:url" content="http://yoursite.com/2018/06/19/用 Node.js 和 express 完成的实时会议系统微信公众号后台/index.html">
+<meta property="og:site_name" content="FogDong&#39;s blog">
+<meta property="og:description" content="之前和小伙伴完成的一个公众号，记录一下大概的开发过程吧 微信授权部分我们用的是企业微信号，因为当时企业微信的官方文档更新不够及时，有部分 api 的请求参数是错误的，所以耽误了不少时间。 第一步请求微信的api首先需要拿到一个 accessToken，而这个 token 是通过 corpid 和 corpsecret 来拿到的  corpid：每个企业都拥有唯一的 corpid，获取此信息可在管理">
+<meta property="og:updated_time" content="2018-12-25T12:52:19.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="用 Node.js 和 express 完成的实时会议系统微信公众号后台">
+<meta name="twitter:description" content="之前和小伙伴完成的一个公众号，记录一下大概的开发过程吧 微信授权部分我们用的是企业微信号，因为当时企业微信的官方文档更新不够及时，有部分 api 的请求参数是错误的，所以耽误了不少时间。 第一步请求微信的api首先需要拿到一个 accessToken，而这个 token 是通过 corpid 和 corpsecret 来拿到的  corpid：每个企业都拥有唯一的 corpid，获取此信息可在管理">
+
+  
+
+  
+    <link rel="icon" href="/images/crown.png">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?57e94d016e201fba3603a8a2b0263af0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+</head>
+<body>
+<canvas id="starlight"></canvas>
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/category/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tag/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">Posts List</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#微信授权部分"><span class="toc-text">微信授权部分</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实时聊天部分"><span class="toc-text">实时聊天部分</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#基本会议功能"><span class="toc-text">基本会议功能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#活动部分功能"><span class="toc-text">活动部分功能</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-用 Node.js 和 express 完成的实时会议系统微信公众号后台" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">用 Node.js 和 express 完成的实时会议系统微信公众号后台</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2018.06.19</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>FogDong</span>
+        </span>
+      
+
+      
+  <span class="article-category">
+    <i class="icon-list"></i>
+    <a class="article-category-link" href="/categories/后端/">后端</a>
+  </span>
+
+
+
+      
+        <span>
+          <i class="icon-comment"></i>
+          <a href="https://fogdong.github.io//2018/06/19/用 Node.js 和 express 完成的实时会议系统微信公众号后台/#disqus_thread"></a>
+        </span>
+      
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <p>之前和小伙伴完成的一个公众号，记录一下大概的开发过程吧</p>
+<h2 id="微信授权部分"><a href="#微信授权部分" class="headerlink" title="微信授权部分"></a>微信授权部分</h2><p>我们用的是企业微信号，因为当时企业微信的<a href="http://work.weixin.qq.com/api/doc" target="_blank" rel="external">官方文档</a>更新不够及时，有部分 api 的请求参数是错误的，所以耽误了不少时间。</p>
+<p><strong>第一步</strong><br>请求微信的api首先需要拿到一个 accessToken，而这个 token 是通过 corpid 和 corpsecret 来拿到的</p>
+<blockquote>
+<p>corpid：每个企业都拥有唯一的 corpid，获取此信息可在管理后台“我的企业”－“企业信息”下查看（需要有管理员权限）<br>userid： 每个成员都有唯一的 userid，即所谓“帐号”。在管理后台-&gt;“通讯录”-&gt;点进某个成员的详情页，可以看到</p>
+</blockquote>
+<p>这个 token 的过期时间默认是7200s，保存 token 的方法有很多种，比如说使用 redis，或者直接放在文件中，我这使用的是 guard_dog</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install guard_dog --save</div></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> guard_dog = <span class="built_in">require</span>(<span class="string">'guard_dog'</span>)</div><div class="line"></div><div class="line">guard_dog.init(<span class="string">'ACCESS_TOKEN'</span>, (handler) =&gt; &#123;</div><div class="line">  request.get(&#123;</div><div class="line">    <span class="attr">uri</span>: <span class="string">'https://qyapi.weixin.qq.com/cgi-bin/gettoken?'</span>,</div><div class="line">    <span class="attr">json</span>: <span class="literal">true</span>,</div><div class="line">    <span class="attr">qs</span>: &#123;</div><div class="line">      <span class="string">'corpid'</span>: config.corpId,</div><div class="line">      <span class="string">'corpsecret'</span>: config.corpSecret</div><div class="line">    &#125;</div><div class="line">  &#125;, (err, res, body) =&gt; &#123;</div><div class="line">    <span class="keyword">if</span> (err) &#123;</div><div class="line">      <span class="built_in">console</span>.log(err)</div><div class="line">      <span class="keyword">return</span></div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (body.errcode) &#123;</div><div class="line">      <span class="keyword">return</span></div><div class="line">    &#125;</div><div class="line">    handler(body.access_token, body.expires_in)</div><div class="line">  &#125;)</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<p><strong>第二步</strong><br>配置可信域名，具体参考<a href="http://work.weixin.qq.com/api/doc#10028" target="_blank" rel="external">官方文档</a><br>配置完可信域名后，需要构造如下的连接来获得 code 参数<br><a href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=CORPID&amp;redirect_uri=REDIRECT_URI&amp;response_type=code&amp;scope=SCOPE&amp;agentid=AGENTID&amp;state=STATE#wechat_redirect" target="_blank" rel="external">https://open.weixin.qq.com/connect/oauth2/authorize?appid=CORPID&amp;redirect_uri=REDIRECT_URI&amp;response_type=code&amp;scope=SCOPE&amp;agentid=AGENTID&amp;state=STATE#wechat_redirect</a><br>用户点击后，页面将跳转至 redirect_uri?code=CODE&amp;state=STATE</p>
+<p><strong>第三步</strong><br>获得 code 参数后，就可以根据 code 获取用户信息</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">guard_dog.get(<span class="string">'ACCESS_TOKEN'</span>, (data) =&gt; &#123;</div><div class="line">      <span class="keyword">const</span> tokenParams = &#123;</div><div class="line">        <span class="string">'access_token'</span>: data,</div><div class="line">        <span class="string">'code'</span>: code</div><div class="line">      &#125;</div><div class="line">      <span class="keyword">let</span> tokenUrl = <span class="string">'https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo?'</span> + qs.stringify(tokenParams)</div><div class="line">  </div><div class="line">      request(tokenUrl, <span class="function"><span class="keyword">function</span> (<span class="params">err, response, body</span>) </span>&#123;</div><div class="line">        <span class="keyword">let</span> userTicket = body.split(<span class="string">'"'</span>)[<span class="number">17</span>]</div><div class="line">        <span class="keyword">const</span> userParams = &#123;</div><div class="line">          <span class="string">'access_token'</span>: data</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">let</span> userUrl = <span class="string">'https://qyapi.weixin.qq.com/cgi-bin/user/getuserdetail?'</span> + qs.stringify(userParams)</div><div class="line">        <span class="keyword">let</span> options = &#123;</div><div class="line">          <span class="attr">url</span>: userUrl,</div><div class="line">          <span class="attr">method</span>: <span class="string">"POST"</span>,</div><div class="line">          <span class="attr">json</span>: <span class="literal">true</span>,</div><div class="line">          <span class="attr">headers</span>: &#123;</div><div class="line">            <span class="string">"content-type"</span>: <span class="string">"application/json"</span>,</div><div class="line">          &#125;,</div><div class="line">          <span class="attr">body</span>: &#123;</div><div class="line">            <span class="string">"user_ticket"</span>: userTicket</div><div class="line">          &#125;</div><div class="line">        &#125;</div><div class="line">  </div><div class="line">        request(options, <span class="function"><span class="keyword">function</span> (<span class="params">err, response, bodyData</span>) </span>&#123;</div><div class="line">          </div><div class="line">          getBody(bodyData)</div><div class="line">           .then(<span class="function"><span class="params">user</span> =&gt;</span> &#123;</div><div class="line">             res.json(&#123;</div><div class="line">               <span class="attr">status</span>: <span class="number">200</span>,</div><div class="line">               user</div><div class="line">             &#125;)</div><div class="line">           &#125;)</div><div class="line">        &#125;)</div><div class="line">      &#125;)</div><div class="line">      </div><div class="line">    &#125;)</div></pre></td></tr></table></figure>
+<h2 id="实时聊天部分"><a href="#实时聊天部分" class="headerlink" title="实时聊天部分"></a>实时聊天部分</h2><p>主要使用了 socket 来实现</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install socket.io --save</div></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> socket = <span class="built_in">require</span>(<span class="string">'socket.io'</span>)</div><div class="line"><span class="keyword">const</span> server = http.createServer(app).listen(<span class="number">4000</span>)</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">const</span> io = socket(server)</div><div class="line"></div><div class="line">io.on(<span class="string">'connection'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">socket</span>) </span>&#123;</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'connected'</span>)</div><div class="line">  socket.on(<span class="string">'joinRoom'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">room</span>) </span>&#123;</div><div class="line">    socket.join(room)</div><div class="line">    socket.on(<span class="string">'sendData'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;</div><div class="line">      io.sockets.in(room).emit(<span class="string">'receiveData'</span>, data)</div><div class="line">    &#125;)</div><div class="line">  &#125;)</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<h2 id="基本会议功能"><a href="#基本会议功能" class="headerlink" title="基本会议功能"></a>基本会议功能</h2><p>如 加入会议/创建会议等等..</p>
+<p>大部分都是一些对数据库的增删改查，创建会议时会自动分配一个五位数的随机会议号<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">radomNumber</span> (<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">let</span> number = <span class="string">''</span></div><div class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++) &#123;</div><div class="line">    number += <span class="built_in">Math</span>.floor(<span class="built_in">Math</span>.random() * <span class="number">10</span>)</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">return</span> number</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>在这里，因为涉及到与数据库的交互，所以要注意异步问题<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">async</span> number(req, res) &#123;</div><div class="line">  <span class="keyword">let</span> result = <span class="string">''</span></div><div class="line">  <span class="keyword">let</span> number = radomNumber()</div><div class="line">  <span class="keyword">while</span> (<span class="number">1</span>) &#123;</div><div class="line">    result = <span class="keyword">await</span> Conference.find(&#123;<span class="attr">number</span>: number&#125;)</div><div class="line">    <span class="keyword">if</span> (<span class="built_in">JSON</span>.stringify(result) === <span class="string">'[]'</span>) &#123;</div><div class="line">      res.json(&#123;</div><div class="line">        number</div><div class="line">      &#125;)</div><div class="line">      <span class="keyword">return</span></div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">      number = radomNumber()</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>有一个扫描二维码可以进入会议的功能，实现的逻辑就是通过 url 生成一个二维码返回给前端，用到了 qrcode 这个 npm 包<br><figure class="highlight powershell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install qrcode --save</div></pre></td></tr></table></figure></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> QRCode = <span class="built_in">require</span>(<span class="string">'qrcode'</span>)</div><div class="line"></div><div class="line">  getQRCode(req, res) &#123;</div><div class="line">    QRCode.toDataURL(req.body.url, <span class="function"><span class="keyword">function</span> (<span class="params">err, url</span>) </span>&#123;</div><div class="line">      res.json(&#123;</div><div class="line">        <span class="attr">status</span>: <span class="number">200</span>,</div><div class="line">        <span class="attr">result</span>: url</div><div class="line">      &#125;)</div><div class="line">    &#125;)</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<h2 id="活动部分功能"><a href="#活动部分功能" class="headerlink" title="活动部分功能"></a>活动部分功能</h2><p>主要实现了四个活动功能，投票，抽奖，评分，红包</p>
+<p><strong>投票功能</strong><br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">Vote</div><div class="line">      .update(&#123;<span class="attr">_id</span>: req.body._id, <span class="string">"options.name"</span>: req.body.name&#125;,</div><div class="line">        &#123;<span class="attr">$inc</span>:&#123;<span class="string">"options.$.people"</span>:<span class="number">1</span>&#125;&#125;)</div><div class="line">      .then(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">        res.json(&#123;</div><div class="line">          <span class="attr">status</span>: <span class="number">200</span>,</div><div class="line">          <span class="attr">result</span>: <span class="string">'Success!'</span></div><div class="line">        &#125;)</div><div class="line">      &#125;)</div><div class="line">      .catch(<span class="function"><span class="params">err</span> =&gt;</span> &#123;</div><div class="line">        <span class="built_in">console</span>.error(err)</div><div class="line">        <span class="keyword">if</span> (err.json) &#123;</div><div class="line">          err.message = err.json.message</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span> (!returned) &#123;</div><div class="line">          res.status(<span class="number">500</span>).json(&#123;</div><div class="line">            <span class="attr">status</span>: <span class="number">500</span>,</div><div class="line">            <span class="attr">result</span>: err.message</div><div class="line">          &#125;)</div><div class="line">        &#125;</div><div class="line">      &#125;)</div></pre></td></tr></table></figure></p>
+<p><strong>抽奖功能</strong><br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">Conference</div><div class="line">      .findOne(&#123;<span class="attr">number</span>: req.body.number&#125;)</div><div class="line">      .then(<span class="function"><span class="params">conference</span> =&gt;</span> &#123;</div><div class="line">        <span class="keyword">let</span> winner = <span class="built_in">Math</span>.floor(<span class="built_in">Math</span>.random() * (conference.people))</div><div class="line">        Lottery</div><div class="line">          .update(&#123;<span class="attr">_id</span>: req.body._id&#125;,</div><div class="line">            &#123;<span class="attr">$set</span>:&#123;<span class="attr">luckyDog</span>: conference.userList[winner].name, <span class="attr">isBegin</span>: <span class="literal">true</span>&#125;&#125;)</div><div class="line">          .then(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">            res.json(&#123;</div><div class="line">              <span class="attr">status</span>: <span class="number">200</span>,</div><div class="line">              <span class="attr">result</span>: <span class="string">'Success!'</span></div><div class="line">            &#125;)</div><div class="line">          &#125;)</div><div class="line">      &#125;)</div></pre></td></tr></table></figure></p>
+<p><strong>评分功能</strong><br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">Rate</div><div class="line">    .update(</div><div class="line">      &#123;<span class="attr">_id</span>:req.body._id&#125;,</div><div class="line">      &#123;<span class="attr">$inc</span>: &#123;<span class="attr">totalScore</span>: req.body.score, <span class="attr">totalPeople</span>: <span class="number">1</span>&#125;&#125;)</div><div class="line">    .then(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">      res.json(&#123;</div><div class="line">        <span class="attr">status</span>: <span class="number">200</span>,</div><div class="line">        <span class="attr">result</span>: <span class="string">'Success!'</span></div><div class="line">      &#125;)</div><div class="line">    &#125;)</div></pre></td></tr></table></figure></p>
+<p><strong>红包功能</strong><br>因为涉及到支付功能的话需要进行企业认证，所以采用了模拟红包的方法来实现</p>
+<p>首先是一个红包算法<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">red</span> (<span class="params">rpAmount, ppCount</span>) </span>&#123;</div><div class="line">  <span class="keyword">let</span> rpResult=[]</div><div class="line">  <span class="keyword">let</span> rpRnds = []</div><div class="line">  <span class="keyword">let</span> rpRndSum = <span class="number">0</span></div><div class="line">  <span class="keyword">for</span>(<span class="keyword">let</span> i=<span class="number">0</span>;i&lt;ppCount;i++)&#123;</div><div class="line">    <span class="keyword">let</span> rnd = <span class="built_in">Math</span>.random();</div><div class="line">    rpRndSum += rnd;</div><div class="line">    rpRnds.push(rnd);</div><div class="line">  &#125;</div><div class="line">  rpRnds.forEach(<span class="function">(<span class="params">rnd</span>)=&gt;</span>&#123;rpResult.push(<span class="built_in">parseFloat</span>((rpAmount*rnd/rpRndSum).toFixed(<span class="number">2</span>)))&#125;)</div><div class="line">  <span class="keyword">return</span> rpResult</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>rpAmount 是总金额，ppCount 是红包个数<br>以10个红包，一百元为例：<br>先生成10个0-1之间的随机数，加入到 rpRnds 这个数组中，然后对这个数组中的每个数都进行运算：rpAmount*rnd/rpRndSum<br>（rpRndSum 为这十个数的总和）<br>这样就可以得到较为随机的红包金额<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">Red</div><div class="line">      .findOne(&#123;<span class="attr">_id</span>: req.body._id&#125;)</div><div class="line">      .then(<span class="function"><span class="params">red</span> =&gt;</span> &#123;</div><div class="line">        <span class="keyword">if</span> (red.index &gt; red.people - <span class="number">1</span>) &#123;</div><div class="line">          res.json(&#123;</div><div class="line">            <span class="attr">money</span>: <span class="literal">null</span></div><div class="line">          &#125;)</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">          Red</div><div class="line">            .update(&#123;<span class="attr">_id</span>: req.body._id&#125;,</div><div class="line">              &#123;<span class="attr">$push</span>:&#123;<span class="attr">luckyDogs</span>: &#123;<span class="attr">username</span>:req.body.username, <span class="attr">money</span>:red.money[red.index]&#125;&#125;,</div><div class="line">               <span class="attr">$inc</span>:&#123;<span class="attr">index</span>: <span class="number">1</span>&#125;&#125;)</div><div class="line">            .then(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">              res.json(&#123;</div><div class="line">                <span class="attr">money</span>: red.money[red.index],</div><div class="line">                <span class="attr">index</span>: red.index</div><div class="line">              &#125;)</div><div class="line">            &#125;)</div><div class="line">        &#125;</div><div class="line">      &#125;)</div></pre></td></tr></table></figure></p>
+
+    
+  </div>
+</article>
+
+</div>
+
+
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">Close</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/category/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tag/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+  <section class="disqus-comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </section>
+
+  <script>
+    var disqus_shortname = 'fogdong';
+    
+    var disqus_url = 'http://yoursite.com/2018/06/19/用 Node.js 和 express 完成的实时会议系统微信公众号后台/';
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+  <script id="dsq-count-scr" src="//fogdong.disqus.com/count.js" async></script>
+
+
+
+    
+
+
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>

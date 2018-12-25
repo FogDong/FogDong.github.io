@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Node.js 的内存控制 | FogDong&#39;s blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="NodeJS,后端,V8,内存控制," />
+  
+
+  <meta name="description" content="内存限制Node 基于 V8 构建，所以存在一定的内存限制（64 位系统下约为 1.4GB, 32 位系统下约为 0.7GB）可用 process.memoryUsage() 查看在启动 node 时可以通过传递--max-old-space-size 或 --max-new-space-size更改，前者对应单位 MB，用于更改老生代内存，后者对应单位 KB，用于更改新生代内存 V8 的垃圾回收">
+<meta name="keywords" content="NodeJS,后端,V8,内存控制">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Node.js 的内存控制">
+<meta property="og:url" content="http://yoursite.com/2018/07/26/Node.js 的内存控制/index.html">
+<meta property="og:site_name" content="FogDong&#39;s blog">
+<meta property="og:description" content="内存限制Node 基于 V8 构建，所以存在一定的内存限制（64 位系统下约为 1.4GB, 32 位系统下约为 0.7GB）可用 process.memoryUsage() 查看在启动 node 时可以通过传递--max-old-space-size 或 --max-new-space-size更改，前者对应单位 MB，用于更改老生代内存，后者对应单位 KB，用于更改新生代内存 V8 的垃圾回收">
+<meta property="og:updated_time" content="2018-12-25T12:58:34.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Node.js 的内存控制">
+<meta name="twitter:description" content="内存限制Node 基于 V8 构建，所以存在一定的内存限制（64 位系统下约为 1.4GB, 32 位系统下约为 0.7GB）可用 process.memoryUsage() 查看在启动 node 时可以通过传递--max-old-space-size 或 --max-new-space-size更改，前者对应单位 MB，用于更改老生代内存，后者对应单位 KB，用于更改新生代内存 V8 的垃圾回收">
+
+  
+
+  
+    <link rel="icon" href="/images/crown.png">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?57e94d016e201fba3603a8a2b0263af0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+</head>
+<body>
+<canvas id="starlight"></canvas>
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/category/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tag/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">Posts List</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#内存限制"><span class="toc-text">内存限制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#V8-的垃圾回收机制"><span class="toc-text">V8 的垃圾回收机制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#新生代"><span class="toc-text">新生代</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#老生代"><span class="toc-text">老生代</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#晋升"><span class="toc-text">晋升</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#算法"><span class="toc-text">算法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#全停顿（stop-the-world）"><span class="toc-text">全停顿（stop-the-world）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#无法立即回收的内存"><span class="toc-text">无法立即回收的内存</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#堆外内存"><span class="toc-text">堆外内存</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-Node.js 的内存控制" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">Node.js 的内存控制</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2018.07.26</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>FogDong</span>
+        </span>
+      
+
+      
+  <span class="article-category">
+    <i class="icon-list"></i>
+    <a class="article-category-link" href="/categories/后端/">后端</a>
+  </span>
+
+
+
+      
+        <span>
+          <i class="icon-comment"></i>
+          <a href="https://fogdong.github.io//2018/07/26/Node.js 的内存控制/#disqus_thread"></a>
+        </span>
+      
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <h2 id="内存限制"><a href="#内存限制" class="headerlink" title="内存限制"></a>内存限制</h2><p>Node 基于 V8 构建，所以存在一定的内存限制（64 位系统下约为 1.4GB, 32 位系统下约为 0.7GB）<br>可用 <code>process.memoryUsage()</code> 查看<br>在启动 node 时可以通过传递<br><code>--max-old-space-size</code> 或 <code>--max-new-space-size</code>更改，前者对应单位 MB，用于更改老生代内存，后者对应单位 KB，用于更改新生代内存</p>
+<h2 id="V8-的垃圾回收机制"><a href="#V8-的垃圾回收机制" class="headerlink" title="V8 的垃圾回收机制"></a>V8 的垃圾回收机制</h2><p>V8 中内存分为新生代（存活时间较短的对象）和老生代（存活时间较长的对象）</p>
+<h3 id="新生代"><a href="#新生代" class="headerlink" title="新生代"></a>新生代</h3><p>Scavenge 算法（主要采用了 Cheney 算法）</p>
+<ul>
+<li>将堆内存一分为二，每一部分空间叫 semispace，使用中的叫 From，闲置的叫 To</li>
+<li>开始垃圾回收时，先检查 From 中的存活，将其复制到 To，其余释放，完成后 From 与 To 二者交换（这个交换的过程也称翻转）</li>
+<li>是一种典型的牺牲空间换取时间的算法，但是非常适合新生代这种场合</li>
+</ul>
+<h3 id="老生代"><a href="#老生代" class="headerlink" title="老生代"></a>老生代</h3><h4 id="晋升"><a href="#晋升" class="headerlink" title="晋升"></a>晋升</h4><p>若一个对象经过多次复制依然存活时，会被移动到老生代中，称为晋升<br>晋升的要求：（将对象从 From 到 To 时）：</p>
+<ul>
+<li>若对象经历过一次 Scavenge 回收，则复制到老生代空间里</li>
+<li>若 To 中空间使用大于 25%，则复制到老生代空间里</li>
+</ul>
+<h4 id="算法"><a href="#算法" class="headerlink" title="算法"></a>算法</h4><p>老生代垃圾回收的算法：</p>
+<ul>
+<li>mark-sweep 算法：字面上理解，第一步，标记；第二步，清除。标记活着的对象，只清理死亡的对象。缺点，会存在碎片空间。</li>
+<li>mark-compact 算法：第一步，标记死亡对象；第二步，整理，将活着的对象往一端移动，移动完成后，直接清理掉边界外的内存。</li>
+</ul>
+<p>主要使用 mark-sweep：因为速度快</p>
+<h4 id="全停顿（stop-the-world）"><a href="#全停顿（stop-the-world）" class="headerlink" title="全停顿（stop-the-world）"></a>全停顿（stop-the-world）</h4><p>在进行垃圾回收的时候会全停顿，而在老生代中全停顿时间很久，所以有<strong>增量标记</strong></p>
+<h3 id="无法立即回收的内存"><a href="#无法立即回收的内存" class="headerlink" title="无法立即回收的内存"></a>无法立即回收的内存</h3><ul>
+<li>全局变量</li>
+<li>闭包</li>
+</ul>
+<h2 id="堆外内存"><a href="#堆外内存" class="headerlink" title="堆外内存"></a>堆外内存</h2><p>Node 中的内存使用并非都是通过 V8 进行分配的，不是通过 V8 分配的内存称为堆外内存</p>
+<ul>
+<li>Buffer 使用的是堆外内存，没有堆内存的大小限制</li>
+</ul>
+
+    
+  </div>
+</article>
+
+</div>
+
+
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">Close</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/category/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tag/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+  <section class="disqus-comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </section>
+
+  <script>
+    var disqus_shortname = 'fogdong';
+    
+    var disqus_url = 'http://yoursite.com/2018/07/26/Node.js 的内存控制/';
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+  <script id="dsq-count-scr" src="//fogdong.disqus.com/count.js" async></script>
+
+
+
+    
+
+
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
