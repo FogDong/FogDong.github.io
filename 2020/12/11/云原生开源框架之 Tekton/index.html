@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>云原生开源框架之 Tekton | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="TektonTekton 是一个基于 Kubernetes 的云原生 CI&#x2F;CD 开源框架，属于 CD 基金会 的项目之一。Tekton 通过定义 CRD 的方式，使用户可以灵活的自定义流水线以满足自身的 CI&#x2F;CD 需求。 基本概念四个基本概念Tekton 中最主要的概念有以下四个：Task、TaskRun、Pipeline 以及 PipelineRun。如图：  Task: Task 即为构建">
+<meta property="og:type" content="article">
+<meta property="og:title" content="云原生开源框架之 Tekton">
+<meta property="og:url" content="http://example.com/2020/12/11/%E4%BA%91%E5%8E%9F%E7%94%9F%E5%BC%80%E6%BA%90%E6%A1%86%E6%9E%B6%E4%B9%8B%20Tekton/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="TektonTekton 是一个基于 Kubernetes 的云原生 CI&#x2F;CD 开源框架，属于 CD 基金会 的项目之一。Tekton 通过定义 CRD 的方式，使用户可以灵活的自定义流水线以满足自身的 CI&#x2F;CD 需求。 基本概念四个基本概念Tekton 中最主要的概念有以下四个：Task、TaskRun、Pipeline 以及 PipelineRun。如图：  Task: Task 即为构建">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/tekton.png">
+<meta property="og:image" content="http://example.com/images/resource1.png">
+<meta property="og:image" content="http://example.com/images/resource2.png">
+<meta property="article:published_time" content="2020-12-11T08:10:59.032Z">
+<meta property="article:modified_time" content="2020-12-11T08:23:35.467Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/tekton.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-云原生开源框架之 Tekton" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2020/12/11/%E4%BA%91%E5%8E%9F%E7%94%9F%E5%BC%80%E6%BA%90%E6%A1%86%E6%9E%B6%E4%B9%8B%20Tekton/" class="article-date">
+  <time class="dt-published" datetime="2020-12-11T08:10:59.032Z" itemprop="datePublished">2020-12-11</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      云原生开源框架之 Tekton
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1 id="Tekton"><a href="#Tekton" class="headerlink" title="Tekton"></a>Tekton</h1><p>Tekton 是一个基于 Kubernetes 的云原生 CI/CD 开源框架，属于 CD 基金会 的项目之一。Tekton 通过定义 CRD 的方式，使用户可以灵活的自定义流水线以满足自身的 CI/CD 需求。</p>
+<h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><h3 id="四个基本概念"><a href="#四个基本概念" class="headerlink" title="四个基本概念"></a>四个基本概念</h3><p>Tekton 中最主要的概念有以下四个：Task、TaskRun、Pipeline 以及 PipelineRun。<br><img src="/images/tekton.png" alt="Alt text"><br>如图：</p>
+<ul>
+<li>Task: Task 即为构建任务，是 Tekton 中不可分割的最小单位，正如同 Pod 在 Kubernetes 中的概念一样。在 Task 中，可以有多个 Step，每个 Step 由一个 Container 来执行。</li>
+<li>Pipeline: Pipeline 由一个或多个 Task 组成。在 Pipeline 中，用户可以定义这些 Task 的执行顺序以及依赖关系来组成 DAG（有向无环图）。</li>
+<li>PipelineRun: PipelineRun 是 Pipeline 的实际执行产物，当用户定义好 Pipeline 后，可以通过创建 PipelineRun 的方式来执行流水线，并生成一条流水线记录。</li>
+<li>TaskRun: PipelineRun 被创建出来后，会对应 Pipeline 里面的 Task 创建各自的 TaskRun。一个 TaskRun 控制一个 Pod，Task 中的 Step 对应 Pod 中的 Container。当然，TaskRun 也可以单独被创建。</li>
+</ul>
+<p>综上可知：Pipeline 由多个 Task 组成，每次执行对应生成一条 PipelineRun，其控制的 TaskRun 将创建实际运行的 Pod。以一个最简单的例子来展示以上这些概念：</p>
+<ol>
+<li>首先，创建一个最简单的 Task，里面仅有一个 Step：在一个 ubuntu 镜像中执行 ls 命令。<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">tekton.dev/v1beta1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Task</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">task-example</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">steps:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">ls</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">ubuntu</span></span><br><span class="line">    <span class="attr">command:</span> [<span class="string">&quot;ls&quot;</span>]</span><br></pre></td></tr></table></figure></li>
+<li>接着，创建一个 Pipeline，里面引用第一步中创建的 Task<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">tekton.dev/v1beta1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pipeline</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">pipeline-example</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">tasks:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">task-example</span></span><br><span class="line">    <span class="attr">taskRef:</span></span><br><span class="line">      <span class="attr">name:</span> <span class="string">task-example</span></span><br></pre></td></tr></table></figure></li>
+<li>在 Pipeline 存在的前提下，就可以通过创建 PipelineRun 来运行 Pipeline<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">tekton.dev/v1beta1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">PipelineRun</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">pipelinerun-example</span>  </span><br><span class="line">  <span class="comment"># 或者可以直接使用 generateName，让 kubernetes 自动在名字后生成随机字符串</span></span><br><span class="line">  <span class="comment"># generateName: pipelinerun-example-</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">pipelineRef:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">pipeline-example</span></span><br></pre></td></tr></table></figure>
+这样，一个最简单的 Tekton 流水线例子就完成啦！每一个 PipelineRun 的创建，都会遵循 Pipeline 中的顺序规则去启动 Task 的 Pod。接着，我们引入另外一个概念 PipelineResource 来完成一个稍微复杂一些的例子，也是 DevOps 中最常见的场景：从代码仓库拉取镜像、进行代码构建、并最终将构建好的镜像推往镜像仓库。<h3 id="PipelineResource"><a href="#PipelineResource" class="headerlink" title="PipelineResource"></a>PipelineResource</h3>PipelineResource 代表着一系列的资源，主要承担了作为 Task 的输入或者输出的作用。有以下几种类型：<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>介绍</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>git</td>
+<td>Git 资源代表一个 git 仓库，包含了需要被构建的源代码。将 git 资源作为 Task 的 Input，会自动 clone 此 git 仓库。</td>
+</tr>
+<tr>
+<td>pullRequest</td>
+<td>pullRequest 资源表示来自配置的 url（通常是一个 git 仓库）的 pull request 事件。将 pull request 资源作为 Task 的 Input，将自动下载 pull request 相关元数据的文件，如 base/head commit，comments 以及 labels。</td>
+</tr>
+<tr>
+<td>image</td>
+<td>Image 资源代表镜像仓库中的镜像，通常作为 Task 的 Output，用于生成镜像。</td>
+</tr>
+<tr>
+<td>cluster</td>
+<td>Cluster 资源表示一个除了当前集群外的 Kubernetes 集群。可以使用 Cluster 资源在不同的集群上部署应用。</td>
+</tr>
+<tr>
+<td>storage</td>
+<td>Storage 资源表示 blob 存储，它包含一个对象或目录。将 Storage 资源作为 Task 的 Input 将自动下载存储内容，并允许 Task 执行操作。目前仅支持 GCS。</td>
+</tr>
+<tr>
+<td>cloud event</td>
+<td>Cloud event 资源将会在 TaskRun z执行完成后发送事件信息（包含整个 TaskRun） 到指定的 URI 地址，在与第三方通信的时候十分有用。</td>
+</tr>
+</tbody></table>
+</li>
+</ol>
+<p>以上为 Tekton 目前支持的六大 PipelineResource 类型，具体的配置及使用方法详见 PipelineResource 文档。<br>再来分析一下我们刚刚想要完成的例子：从代码仓库拉取镜像、进行代码构建、并将构建好的镜像推往镜像仓库。从已有的 PipelineResource 类型可判断，可以使用 git 类型作为我们的代码资源作为输入，并用 image 类型作为镜像资源作为输出。有了输入输出后，我们可以直接使用 Kaniko 来构建镜像。</p>
+<blockquote>
+<p>Kaniko 是 Google 开源的项目之一，用于在 Kubernetes 上无需特权模式地构建 docker 镜像。</p>
+</blockquote>
+<ol>
+<li>那么，我们首先来创建这两个 PipelineResource。在这个例子中，git-input 对应输入，image-output 对应输出。params 中的参数均为该资源类型的固定参数：如 git 中可以通过 revision 指定版本号，image 中可以通过 url 指定镜像仓库地址。</li>
+</ol>
+<p>Git-input:</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">tekton.dev/v1alpha1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">PipelineResource</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">git-input</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">params:</span></span><br><span class="line">  <span class="comment"># revision 指定版本号</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">revision</span></span><br><span class="line">    <span class="attr">value:</span> <span class="string">v0.32.0</span></span><br><span class="line">  <span class="comment"># 代码仓库地址，若为私有仓库，还需要配置 service account 以及 secret</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">url</span>  </span><br><span class="line">    <span class="attr">value:</span> <span class="string">https://github.com/GoogleContainerTools/skaffold</span></span><br></pre></td></tr></table></figure>
+<p>Image-output:</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">tekton.dev/v1alpha1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">PipelineResource</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">image-output</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">image</span></span><br><span class="line">  <span class="attr">params:</span></span><br><span class="line">    <span class="comment"># 镜像仓库地址，若为私有仓库，还需要配置 service account 以及 secret</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">url</span></span><br><span class="line">      <span class="attr">value:</span> <span class="string">gcr.io/&lt;use</span> <span class="string">your</span> <span class="string">project&gt;/leeroy-web</span></span><br></pre></td></tr></table></figure>
+<p>在配置 PipelineResource 时，如果使用了私有仓库，还需要配置 Service Account，详见 configuring-authentication-for-docker</p>
+<h3 id="产物传递"><a href="#产物传递" class="headerlink" title="产物传递"></a>产物传递</h3><p>创建完 PipelineResource 后，便需要在 Task 中引入它们作为输入输出。那么，这些资源是如何在 Task 间传递的呢？<br>在 Tekton 的分区下，我们可以看到一个叫做 config-artifact-pvc 和一个叫做 config-artifact-bucket 的 Config Map。从命名就可以看出，这二者分别代表了产物存储的两种配置方式—— PVC 和 存储桶（目前支持 GCS 和 S3）。<br>以 PVC 为例：修改 config-artifact-pvc 需要填写两个值：size 以及 storageClassName。size 默认为 5GiB，storage class name 默认为 default。这也意味着当我们使用 PipelineResource 进行资源传递时，会自动创建一个 5GiB 的存储卷挂载在 Task 上，供 PipelineResource 使用。<br>在需要进行 Task 间的资源传递时，这个存储卷会被挂载在 Task 的 /pvc 目录下。当 Task 执行完成并且需要进行资源传递（通过 inputs/outputs 指定）后，TaskRun controller 会自动去添加一个拷贝文件的步骤容器，并将输出产物统一放到 /pvc/task_name/resource_name 命名规范的目录下。 </p>
+<p>上面是针对产物需要进行传递的情况下，对于我们目前这个例子而言，由于只需要一个 Task，虽然指定了 Inputs 和 Outputs，但并没有另一个 Task 来引用这些结果。因此，在这个例子中并不会去挂载 PVC。<br>对于 git 以及 storage 类型的 input，资源下载后会被 放在 /workspace/task_resource_name 下；对于 output 则会放在 /workspace/output/resource_name 下。image 类型的资源则会直接上传到镜像仓库。</p>
+<ol start="2">
+<li>了解了这些前置知识后，我们可以来创建 Task 了。Kaniko 需要三个参数来完成镜像构建：Dockerfile 的地址，context 的地址以及镜像仓库的地址。在下面这个例子中，我们大量使用了 params 以及 Tekton 中的变量替换。Params 用于在 TaskRun 和 Task 中传递参数，而变量替换的格式为 $(xxx)。使用这些变量可以让 Tekton 在运行过程中根据规则进行赋值。值得注意的是，Tekton 并不会提前去检查这些变量的内容，这就要求着我们在写的时候需要多加注意。具体的变量编写规则详见：Tekton variables。<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">tekton.dev/v1beta1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Task</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">build-docker-image-from-git-source</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">params:</span></span><br><span class="line">    <span class="comment"># 参数用于找到 Dockerfile 用于构建镜像</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">pathToDockerFile</span></span><br><span class="line">      <span class="attr">type:</span> <span class="string">string</span></span><br><span class="line">      <span class="attr">description:</span> <span class="string">The</span> <span class="string">path</span> <span class="string">to</span> <span class="string">the</span> <span class="string">dockerfile</span> <span class="string">to</span> <span class="string">build</span></span><br><span class="line">    <span class="comment"># 此处为 Tekton 的变量替换格式 $(xxx)，</span></span><br><span class="line">    <span class="comment"># 该变量会去找到 resources 中名为 docker-source 的 inputs 的目录</span></span><br><span class="line">    <span class="comment"># 在这个场景下，即为 Dockefile 所在的目录</span></span><br><span class="line">      <span class="attr">default:</span> <span class="string">$(resources.inputs.docker-source.path)/Dockerfile</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">pathToContext</span></span><br><span class="line">      <span class="attr">type:</span> <span class="string">string</span></span><br><span class="line">      <span class="attr">description:</span> <span class="string">|</span></span><br><span class="line">        <span class="string">The</span> <span class="string">build</span> <span class="string">context</span> <span class="string">used</span> <span class="string">by</span> <span class="string">Kaniko</span></span><br><span class="line">        <span class="string">(https://github.com/GoogleContainerTools/kaniko#kaniko-build-contexts)</span></span><br><span class="line">     <span class="comment"># 同上，context 的地址与 Dockerfile 地址一致</span></span><br><span class="line">      <span class="attr">default:</span> <span class="string">$(resources.inputs.docker-source.path)</span></span><br><span class="line">  <span class="comment"># 申明了两个 resource，一个 input 一个 output</span></span><br><span class="line">  <span class="attr">resources:</span></span><br><span class="line">    <span class="attr">inputs:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">docker-source</span></span><br><span class="line">        <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">    <span class="attr">outputs:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">builtImage</span></span><br><span class="line">        <span class="attr">type:</span> <span class="string">image</span></span><br><span class="line">  <span class="attr">steps:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">build-and-push</span></span><br><span class="line">      <span class="attr">image:</span> <span class="string">gcr.io/kaniko-project/executor:v0.16.0</span></span><br><span class="line">      <span class="comment"># 需要指定 DOCKER_CONFIG 来允许 kaniko 检测 docker credential</span></span><br><span class="line">      <span class="attr">env:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">&quot;DOCKER_CONFIG&quot;</span></span><br><span class="line">          <span class="attr">value:</span> <span class="string">&quot;/tekton/home/.docker/&quot;</span></span><br><span class="line">      <span class="attr">command:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">/kaniko/executor</span></span><br><span class="line">      <span class="attr">args:</span></span><br><span class="line">      <span class="comment"># 使用了变量替换，第一个和第三个从 params 中取值</span></span><br><span class="line">      <span class="comment"># 第二个为 resource 中名为 builtImage 的 outputs 的 url</span></span><br><span class="line">      <span class="comment"># 即镜像仓库地址</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">--dockerfile=$(params.pathToDockerFile)</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">--destination=$(resources.outputs.builtImage.url)</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">--context=$(params.pathToContext)</span></span><br></pre></td></tr></table></figure></li>
+<li>有了 Task 后，我们便可以创建 TaskRun 来执行这个 Task。注意，在 spec 中申明了 serviceAccountName 用于指定私有仓库的权限。<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">tekton.dev/v1beta1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">TaskRun</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">build-docker-image-from-git-source-task-run</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">serviceAccountName:</span> <span class="string">tutorial-service</span></span><br><span class="line">  <span class="attr">taskRef:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">build-docker-image-from-git-source</span></span><br><span class="line">  <span class="attr">params:</span></span><br><span class="line">    <span class="comment"># 传递参数进入 Task</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">pathToDockerFile</span></span><br><span class="line">      <span class="attr">value:</span> <span class="string">Dockerfile</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">pathToContext</span></span><br><span class="line">      <span class="attr">value:</span> <span class="string">$(resources.inputs.docker-source.path)/examples/microservices/leeroy-web</span> <span class="comment">#configure: may change according to your source</span></span><br><span class="line">  <span class="attr">resources:</span></span><br><span class="line">    <span class="attr">inputs:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">docker-source</span></span><br><span class="line">        <span class="attr">resourceRef:</span></span><br><span class="line">          <span class="attr">name:</span> <span class="string">git-input</span></span><br><span class="line">    <span class="attr">outputs:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">builtImage</span></span><br><span class="line">        <span class="attr">resourceRef:</span></span><br><span class="line">          <span class="attr">name:</span> <span class="string">image-output</span></span><br></pre></td></tr></table></figure>
+至此，一个更为复杂的流水线也构建完成了。</li>
+</ol>
+<h2 id="DAG"><a href="#DAG" class="headerlink" title="DAG"></a>DAG</h2><p>在 Tekton 中，DAG（有向无环图）的功能是原生支持的。只需要通过申明 runAfter 及 from 便可以便利的使 Pipeline 以 DAG 方式运行。</p>
+<ul>
+<li>from：当 Task 的 Inputs 依赖于上一个 Task 的 Outputs 时，可以通过 from 参数来指定</li>
+<li>runAfter：当 Task 间没有资源依赖，但需要使一个 Task 在另外一个 Task 之后运行的话，可以使用 runAfter 来指定。<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">lint-repo</span></span><br><span class="line">  <span class="attr">taskRef:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">pylint</span></span><br><span class="line">  <span class="attr">resources:</span></span><br><span class="line">    <span class="attr">inputs:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">workspace</span></span><br><span class="line">        <span class="attr">resource:</span> <span class="string">my-repo</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">test-app</span></span><br><span class="line">  <span class="attr">taskRef:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">make-test</span></span><br><span class="line">  <span class="attr">resources:</span></span><br><span class="line">    <span class="attr">inputs:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">workspace</span></span><br><span class="line">        <span class="attr">resource:</span> <span class="string">my-repo</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">build-app</span></span><br><span class="line">  <span class="attr">taskRef:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">kaniko-build-app</span></span><br><span class="line">  <span class="attr">runAfter:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">test-app</span></span><br><span class="line">  <span class="attr">resources:</span></span><br><span class="line">    <span class="attr">inputs:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">workspace</span></span><br><span class="line">        <span class="attr">resource:</span> <span class="string">my-repo</span></span><br><span class="line">    <span class="attr">outputs:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">image</span></span><br><span class="line">        <span class="attr">resource:</span> <span class="string">my-app-image</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">build-frontend</span></span><br><span class="line">  <span class="attr">taskRef:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">kaniko-build-frontend</span></span><br><span class="line">  <span class="attr">runAfter:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">test-app</span></span><br><span class="line">  <span class="attr">resources:</span></span><br><span class="line">    <span class="attr">inputs:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">workspace</span></span><br><span class="line">        <span class="attr">resource:</span> <span class="string">my-repo</span></span><br><span class="line">    <span class="attr">outputs:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">image</span></span><br><span class="line">        <span class="attr">resource:</span> <span class="string">my-frontend-image</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">deploy-all</span></span><br><span class="line">  <span class="attr">taskRef:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">deploy-kubectl</span></span><br><span class="line">  <span class="attr">resources:</span></span><br><span class="line">    <span class="attr">inputs:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">my-app-image</span></span><br><span class="line">        <span class="attr">resource:</span> <span class="string">my-app-image</span></span><br><span class="line">        <span class="attr">from:</span></span><br><span class="line">          <span class="bullet">-</span> <span class="string">build-app</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">my-frontend-image</span></span><br><span class="line">        <span class="attr">resource:</span> <span class="string">my-frontend-image</span></span><br><span class="line">        <span class="attr">from:</span></span><br><span class="line">          <span class="bullet">-</span> <span class="string">build-frontend</span></span><br></pre></td></tr></table></figure>
+如：在上面的例子中，任务会以下的顺序运行：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">        |            |</span><br><span class="line">        v            v</span><br><span class="line">     test-app    lint-repo</span><br><span class="line">    &#x2F;        \</span><br><span class="line">   v          v</span><br><span class="line">build-app  build-frontend</span><br><span class="line">   \          &#x2F;</span><br><span class="line">    v        v</span><br><span class="line">    deploy-all</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ol>
+<li>lint-repo 和 test-app 中的 Task 没有 from 或 runAfter 关键字，会同时开始执行。</li>
+<li>一旦 test-app 完成， build-app 和 build-frontend 都会开始同时执行，因为它们 runAfter 于 test-app。</li>
+<li>deploy-all 会在 build-app 和 build-frontend 都完成后才执行，因为它需要的资源 from 于这二者。</li>
+</ol>
+<p>再来看看 Tekton 是怎么样来实现这段逻辑的：<br>在 Pipeline 的 Controller 中，一旦监听到 Pipeline 的创建，在创建对应的 TaskRun 之前，会先检测 Pipeline 中的依赖顺序并构建 DAG 图：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">d, err := dag.Build(v1beta1.PipelineTaskList(pipelineSpec.Tasks))</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="comment">// Build returns a valid pipeline Graph. Returns error if the pipeline is invalid</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Build</span><span class="params">(tasks Tasks)</span> <span class="params">(*Graph, error)</span></span> &#123;</span><br><span class="line">    d := newGraph()</span><br><span class="line"></span><br><span class="line">    deps := <span class="keyword">map</span>[<span class="keyword">string</span>][]<span class="keyword">string</span>&#123;&#125;</span><br><span class="line">    <span class="comment">// Add all Tasks mentioned in the `PipelineSpec`</span></span><br><span class="line">    <span class="keyword">for</span> _, pt := <span class="keyword">range</span> tasks.Items() &#123;</span><br><span class="line">        <span class="keyword">if</span> _, err := d.addPipelineTask(pt); err != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">nil</span>, fmt.Errorf(<span class="string">&quot;task %s is already present in Graph, can&#x27;t add it again: %w&quot;</span>, pt.HashKey(), err)</span><br><span class="line">        &#125;</span><br><span class="line">        deps[pt.HashKey()] = pt.Deps()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Process all from and runAfter constraints to add task dependency</span></span><br><span class="line">    <span class="keyword">for</span> pt, taskDeps := <span class="keyword">range</span> deps &#123;</span><br><span class="line">        <span class="keyword">for</span> _, previousTask := <span class="keyword">range</span> taskDeps &#123;</span><br><span class="line">            <span class="keyword">if</span> err := addLink(pt, previousTask, d.Nodes); err != <span class="literal">nil</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">nil</span>, fmt.Errorf(<span class="string">&quot;couldn&#x27;t add link between %s and %s: %w&quot;</span>, pt, previousTask, err)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> d, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="comment">// Node represents a Task in a pipeline.</span></span><br><span class="line"><span class="keyword">type</span> Node <span class="keyword">struct</span> &#123;</span><br><span class="line">    <span class="comment">// Task represent the PipelineTask in Pipeline</span></span><br><span class="line">    Task Task</span><br><span class="line">    <span class="comment">// Prev represent all the Previous task Nodes for the current Task</span></span><br><span class="line">    Prev []*Node</span><br><span class="line">    <span class="comment">// Next represent all the Next task Nodes for the current Task</span></span><br><span class="line">    Next []*Node</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Graph represents the Pipeline Graph</span></span><br><span class="line"><span class="keyword">type</span> Graph <span class="keyword">struct</span> &#123;</span><br><span class="line">    <span class="comment">//Nodes represent map of PipelineTask name to Node in Pipeline Graph</span></span><br><span class="line">    Nodes <span class="keyword">map</span>[<span class="keyword">string</span>]*Node</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Step-执行顺序"><a href="#Step-执行顺序" class="headerlink" title="Step 执行顺序"></a>Step 执行顺序</h2><p>Pipeline 中可以进行对 Task 的顺序控制，那么 Task 中呢？<br>在 Kubernetes 中，Pod 里的 Container 是并行启动的。而在 Tekton 中，虽然 Task 对应 Pod，Task 中的 Step 对应 Container，但 Task 中的 Step 却是顺序执行的。要了解 Tekton 是怎么完成这样的顺序控制，首先我们来看一下一个 Tekton 的 Pod：<br>在这个 Pod 中，除了用户需要运行的 Container，还被注入了一个 InitContainer：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">initContainers:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">command:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">cp</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">/ko-app/entrypoint</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">/tekton/tools/entrypoint</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/entrypoint</span></span><br><span class="line">    <span class="attr">imagePullPolicy:</span> <span class="string">IfNotPresent</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">place-tools</span></span><br><span class="line">    <span class="attr">resources:</span> &#123;&#125;</span><br><span class="line">    <span class="attr">terminationMessagePath:</span> <span class="string">/dev/termination-log</span></span><br><span class="line">    <span class="attr">terminationMessagePolicy:</span> <span class="string">File</span></span><br><span class="line">    <span class="attr">volumeMounts:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">mountPath:</span> <span class="string">/tekton/tools</span></span><br><span class="line">      <span class="attr">name:</span> <span class="string">tekton-internal-tools</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">mountPath:</span> <span class="string">/var/run/secrets/kubernetes.io/serviceaccount</span></span><br><span class="line">      <span class="attr">name:</span> <span class="string">default-token-t2mbw</span></span><br><span class="line">      <span class="attr">readOnly:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+<p>这个 InitContainer copy 了一个 entrypoint 的二进制到 Pod 中。再看下用户的 container，我们可以看到 Pod 的执行命令被 Tekton 改写了一下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">args:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">-wait_file</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">/tekton/downward/ready</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">-wait_file_content</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">-post_file</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">/tekton/tools/0</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">-termination_path</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">/tekton/terminatio</span></span><br><span class="line">    <span class="comment"># 下面为用户原本的执行命令</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">...</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">...</span></span><br><span class="line">    <span class="attr">command:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">/tekton/tools/entrypoint</span></span><br></pre></td></tr></table></figure>
+<p>可以看到 command 被改写为了 entrypoint 命令，这个二进制包在 initContainer 中被导入，另外还有一些启动参数：</p>
+<ul>
+<li>-post_file：指定了 Step 完成后的文件写入路径。如果 Step 失败，则写入到 .err。可以看到上面的写入路径为 /tekton/tools/0，最后的这个数字即为 Step 的编号。</li>
+<li>-wait_file：指定了在启动下一个 Step 之前要查看的文件路径。它将监听  和 .err。若有错误则跳过执行写入 .err 并返回错误（exitCode &gt;= 0）；若无错误则执行下一个 Step。</li>
+</ul>
+<h2 id="资源控制"><a href="#资源控制" class="headerlink" title="资源控制"></a>资源控制</h2><p>在 Kubernetes 中，一个 Pod 被调度需要节点满足 Pod 中的所有 Container 的资源。如下图：<br>这个 Pod 有 4 个容器，总共需要 9 个 CPU。Kubernetes 将把这个 Pod 调度到一个拥有 9 个可用 CPU 的节点上。如果没有节点有 9 个可用 CPU，Pod 将被调度失败并无法启动。<br><img src="/images/resource1.png" alt="Alt text"><br>而对于 Tekton 而言，因为我们知道 Pod 中的 Container 会顺序执行，所以我们只需要满足这个 Pod 中资源最大的 Container 即可。对于同一个TaskRun，Tekton 会获取最大请求，并让一个 Container 去请求这些资源，其他都设为 0。<br>如下，该 Pod 请求 4 个 CPU，而不是 9 个。这样的资源控制方式更为合理且所有的 Step 容器仍保留所需要的资源。</p>
+<blockquote>
+<p>在有 LimitRange 限制 Container 必须有资源的的情况下，每个 Container 最小会设置为 LimitRange 的设置。<br><img src="/images/resource2.png" alt="Alt text"></p>
+</blockquote>
+<p>源码部分逻辑如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">resolveResourceRequests</span><span class="params">(containers []corev1.Container, limitRangeMin corev1.ResourceList)</span> []<span class="title">corev1</span>.<span class="title">Container</span></span> &#123;</span><br><span class="line">    max := allZeroQty()</span><br><span class="line">    resourceNames := []corev1.ResourceName&#123;corev1.ResourceCPU, corev1.ResourceMemory, corev1.ResourceEphemeralStorage&#125;</span><br><span class="line">    maxIndicesByResource := <span class="built_in">make</span>(<span class="keyword">map</span>[corev1.ResourceName]<span class="keyword">int</span>, <span class="built_in">len</span>(resourceNames))</span><br><span class="line">    <span class="keyword">for</span> _, resourceName := <span class="keyword">range</span> resourceNames &#123;</span><br><span class="line">        maxIndicesByResource[resourceName] = <span class="number">-1</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Find max resource requests and associated list indices for</span></span><br><span class="line">    <span class="comment">// containers for CPU, memory, and ephemeral storage resources</span></span><br><span class="line">    <span class="keyword">for</span> i, c := <span class="keyword">range</span> containers &#123;</span><br><span class="line">        <span class="keyword">for</span> k, v := <span class="keyword">range</span> c.Resources.Requests &#123;</span><br><span class="line">            <span class="keyword">if</span> v.Cmp(max[k]) &gt; <span class="number">0</span> &#123;</span><br><span class="line">                maxIndicesByResource[k] = i</span><br><span class="line">                max[k] = v</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Use zeroQty if request value is not set for min</span></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Set all non max resource requests to 0. Leave max request at index</span></span><br><span class="line">    <span class="comment">// originally defined to account for limit of step.</span></span><br><span class="line">    <span class="keyword">for</span> i := <span class="keyword">range</span> containers &#123;</span><br><span class="line">        <span class="keyword">if</span> containers[i].Resources.Requests == <span class="literal">nil</span> &#123;</span><br><span class="line">            containers[i].Resources.Requests = limitRangeMin</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> _, resourceName := <span class="keyword">range</span> resourceNames &#123;</span><br><span class="line">            <span class="keyword">if</span> maxIndicesByResource[resourceName] != i &#123;</span><br><span class="line">                containers[i].Resources.Requests[resourceName] = limitRangeMin[resourceName]</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> containers</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="数据传递"><a href="#数据传递" class="headerlink" title="数据传递"></a>数据传递</h2><p>除了 PipelineResource 以外，Tekton 还提供了其他数据传递的方式。</p>
+<blockquote>
+<p>值得注意的是，PipelineResource 仍处于 Alpha 版本，它有可能会被重新设计、替换、弃用或者完全删除。Tekton 社区鼓励用户用 Task 代替 PipelineResources。具体原因详见：Why aren’t PipelineResources in Beta?</p>
+</blockquote>
+<h3 id="Workspace"><a href="#Workspace" class="headerlink" title="Workspace"></a>Workspace</h3><p>Workspace 与 Kubernetes 中 Volume 概念几乎保持一致，只不过并不是 Pod 层级的而是作用于 Tekton 资源层级的。Workspace 在 Pipeline 中使用时是一个抽象的概念，实际的存储类型需要在 PipelineRun 中指定。详见：Workspaces。</p>
+<h3 id="Results"><a href="#Results" class="headerlink" title="Results"></a>Results</h3><p>Tekton 提供了一个固定目录用于存放 Task 的输出：/tekton/results</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">tekton.dev/v1alpha1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Task</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">print-date</span></span><br><span class="line">  <span class="attr">annotations:</span></span><br><span class="line">    <span class="attr">description:</span> </span><br><span class="line">      <span class="string">A</span> <span class="string">simple</span> <span class="string">task</span> <span class="string">that</span> <span class="string">prints</span> <span class="string">the</span> <span class="string">date</span> <span class="string">to</span> <span class="string">make</span> <span class="string">sure</span> <span class="string">your</span> <span class="string">cluster</span> <span class="string">/</span> <span class="string">Tekton</span> <span class="string">is</span> <span class="string">working</span> <span class="string">properly.</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">results:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">&quot;current-date&quot;</span></span><br><span class="line">      <span class="attr">description:</span> <span class="string">&quot;The current date&quot;</span></span><br><span class="line">  <span class="attr">steps:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">print-date</span></span><br><span class="line">      <span class="attr">image:</span> <span class="string">bash:latest</span></span><br><span class="line">      <span class="attr">args:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">&quot;-c&quot;</span></span><br><span class="line">        <span class="bullet">-</span> </span><br><span class="line">          <span class="string">date</span> <span class="string">&gt;</span> <span class="string">/tekton/results/current-date</span></span><br></pre></td></tr></table></figure>
+<p>如上，该 task 将日期输出到了 /tekton/results/current-date 中。同时，也会被作为 Results 字段加到 TaskRun 的 Status 中。这样，其他的 Task 便可以通过 $(tasks.task name.results.result name) 来获取到该 Task 的 results。（变量替换将会实际从 TaskRun 中获取到 Results 的值）</p>
+<h2 id="其他流程控制功能"><a href="#其他流程控制功能" class="headerlink" title="其他流程控制功能"></a>其他流程控制功能</h2><h3 id="条件判断"><a href="#条件判断" class="headerlink" title="条件判断"></a>条件判断</h3><p>低版本可以使用 Conditions，高版本推荐使用 WhenExpressions（Conditions 将在不久后废弃，完全替换为 WhenExpressions）。WhenExpressions 由 Input、Operator、Values 三部分组成，其中 Input 可以使用 Tekton 的 Parameter 或者 Results，Operator 目前仅支持 in 和 notin：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">tasks:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">first-create-file</span></span><br><span class="line">    <span class="attr">when:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">input:</span> <span class="string">&quot;$(params.path)&quot;</span></span><br><span class="line">        <span class="attr">operator:</span> <span class="string">in</span></span><br><span class="line">        <span class="attr">values:</span> [<span class="string">&quot;README.md&quot;</span>]</span><br><span class="line">    <span class="attr">taskRef:</span></span><br><span class="line">      <span class="attr">name:</span> <span class="string">first-create-file</span></span><br></pre></td></tr></table></figure>
+<h3 id="错误重尝"><a href="#错误重尝" class="headerlink" title="错误重尝"></a>错误重尝</h3><p>通过 retries 来指定任务失败后重新尝试的次数：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">tasks:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">build-the-image</span></span><br><span class="line">    <span class="attr">retries:</span> <span class="number">3</span></span><br><span class="line">    <span class="attr">taskRef:</span></span><br><span class="line">      <span class="attr">name:</span> <span class="string">build-push</span></span><br></pre></td></tr></table></figure>
+<h3 id="退出处理"><a href="#退出处理" class="headerlink" title="退出处理"></a>退出处理</h3><p>通过 finally 指定在 pipeline 结束时执行的 task，无论 pipeline 的结果是成功或失败。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">tasks:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">tests</span></span><br><span class="line">      <span class="attr">taskRef:</span></span><br><span class="line">        <span class="attr">Name:</span> <span class="string">integration-test</span></span><br><span class="line">  <span class="attr">finally:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">cleanup-test</span></span><br><span class="line">      <span class="attr">taskRef:</span></span><br><span class="line">        <span class="attr">Name:</span> <span class="string">cleanup</span></span><br></pre></td></tr></table></figure>
+<h3 id="取消执行"><a href="#取消执行" class="headerlink" title="取消执行"></a>取消执行</h3><p>要取消当前正在执行的 PipelineRun，可以在其 Spec 中更新 Status 为取消。当 PipelineRun 被取消时，所有相关的 Pods 都被删除。例如:</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">tekton.dev/v1beta1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">PipelineRun</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">go-example-git</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="comment"># […]</span></span><br><span class="line">  <span class="attr">status:</span> <span class="string">&quot;PipelineRunCancelled&quot;</span></span><br></pre></td></tr></table></figure>
+<p>Pipeline 暂停的逻辑与之类似，但暂停 PR 尚未合入，暂停功能也在 Tekton 今年的 Roadmap 中。</p>
+<h2 id="Runs"><a href="#Runs" class="headerlink" title="Runs"></a>Runs</h2><p>Runs 是一个进行中的 feature，Run 允许实例化和执行一个 Custom Task，这个 Custom Task 可以通过用户自定义的 controller 来执行。这对于用户来说是一个非常实际的功能，可以通过自己写的 Controller 来定义 Task 的逻辑，而不再拘泥于 Tekton 定义的 Task。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2020/12/11/%E4%BA%91%E5%8E%9F%E7%94%9F%E5%BC%80%E6%BA%90%E6%A1%86%E6%9E%B6%E4%B9%8B%20Tekton/" data-id="ckik08zwa000055laftig4jj0" data-title="云原生开源框架之 Tekton" class="article-share-link">Share</a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">December 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/12/11/%E4%BA%91%E5%8E%9F%E7%94%9F%E5%BC%80%E6%BA%90%E6%A1%86%E6%9E%B6%E4%B9%8B%20Tekton/">云原生开源框架之 Tekton</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2020 John Doe<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
